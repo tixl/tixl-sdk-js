@@ -7,7 +7,7 @@ import { workingCopy } from './utils';
 
 export type OpeningBlockPayload = KeySet & { stealthchainId?: string };
 
-export type AppendStealthChainOp = {
+export type AppendStealthChainChanges = {
   scKeySet: KeySet;
   stealthchain: {
     tx: Transaction;
@@ -25,7 +25,7 @@ export async function appendStealthChain(
   acKeySet: KeySet,
   id: string,
   symbol: AssetSymbol,
-): Promise<AppendStealthChainOp> {
+): Promise<AppendStealthChainChanges> {
   const accountchainCopy = workingCopy(accountchain);
   const scKeySet = await keySet(crypto);
 

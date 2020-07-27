@@ -9,7 +9,7 @@ export {
   decryptPayload,
 } from './api/encryption';
 export { createAccountChain } from './accountchain';
-export { appendStealthChain, findStealthchainKeySet, AppendStealthChainOp } from './stealthchain';
+export { appendStealthChain, findStealthchainKeySet, AppendStealthChainChanges } from './stealthchain';
 export { calcBalance } from './balance';
 export { send, sendTx } from './send';
 export { receive, receiveTx } from './receive';

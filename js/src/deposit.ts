@@ -1,10 +1,29 @@
 import JSBI from 'jsbi';
-import { Blockchain, Crypto, KeySet, AssetSymbol } from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, AssetSymbol, Transaction } from '@tixl/tixl-types';
 
 import { decryptSender } from './api/encryption';
 import { createDepositBlock } from './api/deposit';
 import { findStealthchainKeySet, appendStealthChain } from './stealthchain';
 import { workingCopy } from './utils';
+
+export type DepositChanges = {
+  accountChainOpen:
+    | {
+        tx: Transaction;
+        blockchain: Blockchain;
+      }
+    | undefined;
+  stealthChainOpen:
+    | {
+        tx: Transaction;
+        blockchain: Blockchain;
+      }
+    | undefined;
+  stealthChainDeposit: {
+    tx: Transaction;
+    blockchain: Blockchain;
+  };
+};
 
 export async function depositTx(
   crypto: Crypto,
@@ -62,7 +81,7 @@ export async function deposit(
   stealthChainId: string,
   chainLoader: Record<string, Blockchain | undefined>,
   claimSignature?: string,
-) {
+): Promise<DepositChanges> {
   // load stealth chain
   let stealthchain: Blockchain | undefined;
   let scKeySet = await findStealthchainKeySet(crypto, accountchain, acKeySet, stealthChainId);
