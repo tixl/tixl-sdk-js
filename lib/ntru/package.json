@@ -1,0 +1,11 @@
+{
+  "name": "lib-ntru",
+  "version": "1.0.0",
+  "main": "dist/ntru.js",
+  "scripts": {
+    "build": "make"
+  },
+  "dependencies": {
+    "terser": "4.4.0"
+  }
+}

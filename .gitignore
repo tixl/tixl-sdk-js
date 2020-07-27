@@ -1,5 +1,9 @@
 node_modules/
 dist/
+libsodium/
+.idea/
+
+*.bak
 
 yarn-error.log
 .DS_Store
