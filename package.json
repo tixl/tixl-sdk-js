@@ -1,6 +1,6 @@
 {
   "name": "@tixl/tixl-sdk-js",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "scripts": {
     "prepublish": "yarn build",
     "build": "ls dist/",
@@ -8,6 +8,10 @@
     "build:worker": "npx webpack --config web-worker/webpack.config.js",
     "build:lib": "cp lib/ntru/dist/ntru.js dist/ntru.js && cp lib/pedersen/dist/pedersen.js dist/secp256k1.js && cp lib/pedersen/prebuilt/libsecp256k1.js dist/libsecp256k1.js"
   },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
+  ],
   "dependencies": {
     "@tixl/tixl-types": "0.6.7",
     "aes-js": "3.1.2",
