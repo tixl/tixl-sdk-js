@@ -24,7 +24,7 @@ import {
   createAccountChain,
   receive,
   send,
-} from '../../js/src';
+} from '../../src/workflows';
 import createCrypto from './crypto';
 
 importScripts('/ntru.js');
