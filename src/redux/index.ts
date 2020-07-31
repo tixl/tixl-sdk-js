@@ -1,16 +1,18 @@
 import { ThunkDispatch as ReduxThunkDispatch } from 'redux-thunk';
 import { Action } from 'redux';
-import { KeySet } from '@tixl/tixl-types';
 
 import { TasksReduxState } from './tasks/reducer';
 import { ChainsReduxState } from './chains/reducer';
-import { LoggedError } from './errors/reducer';
+import { ErrorsReduxState } from './errors/reducer';
+import { KeysReduxState } from './keys/reducer';
+import { DebugReduxState } from './debug/reducer';
 
 export type RootState = {
   tasks: TasksReduxState;
   chains: ChainsReduxState;
-  errors: LoggedError[];
-  keys: KeySet;
+  errors: ErrorsReduxState;
+  keys: KeysReduxState;
+  debug: DebugReduxState;
 };
 
 export type ThunkDispatch = ReduxThunkDispatch<RootState, null, Action>;

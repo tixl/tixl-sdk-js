@@ -1,0 +1,1 @@
+export const SEND_NEXT_TX_INVALID = 'SEND_NEXT_TX_INVALID';

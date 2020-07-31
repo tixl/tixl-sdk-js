@@ -1,0 +1,2 @@
+export const SCAN_DATA_CHANGED = 'SCAN_DATA_CHANGED';
+export const RESET_SCAN = 'RESET_SCAN';
