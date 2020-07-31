@@ -5,7 +5,7 @@
     "prepublish": "yarn build",
     "build": "yarn build:js && yarn build:package && yarn build:worker && yarn build:lib",
     "build:js": "tsc",
-    "build:package": "cp src/_package.json dist/package.json",
+    "build:package": "cp src/_package.json dist/package.json && touch dist/.npmignore",
     "build:worker": "npx webpack --config web-worker/webpack.config.js",
     "build:lib": "cp lib/ntru/dist/ntru.js dist/ntru.js && cp lib/pedersen/dist/pedersen.js dist/secp256k1.js && cp lib/pedersen/prebuilt/libsecp256k1.js dist/libsecp256k1.js"
   },
