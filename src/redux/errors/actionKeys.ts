@@ -1,0 +1,1 @@
+export const ADD_LOGGED_ERROR = 'ADD_LOGGED_ERROR';
