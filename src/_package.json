@@ -2,6 +2,8 @@
   "name": "@tixl/tixl-sdk-js",
   "version": "0.1.5",
   "dependencies": {
+    "@tixl/tixl-ntru": "0.1.11",
+    "@tixl/tixl-pedersen-commitments": "2.1.1",
     "@tixl/tixl-types": "0.6.7",
     "aes-js": "3.1.2",
     "axios": "0.19.2",

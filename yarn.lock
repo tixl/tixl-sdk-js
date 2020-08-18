@@ -9,6 +9,22 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@tixl/tixl-ntru@0.1.11":
+  version "0.1.11"
+  resolved "https://npm.pkg.github.com/download/@tixl/tixl-ntru/0.1.11/c6e10b863fd34814954ffb2fee5c51626b41dcfe84fd4b317c4413c50238825d#b435596b5ec2875a57672822d733bffaddfbd431"
+  integrity sha512-ELifpztnUFbJ090Ts6iD6m2O5+E94TI3ihJkmcrUKAlbYgUtzxWf9mz0HSdBprmLFxF1/wNCHS6kz2tDlrnmww==
+  dependencies:
+    replace-in-file "4.2.0"
+
+"@tixl/tixl-pedersen-commitments@2.1.1":
+  version "2.1.1"
+  resolved "https://npm.pkg.github.com/download/@tixl/tixl-pedersen-commitments/2.1.1/1ba90ac1c450828c597d556716a201a79a457ba0097196ca9a570246426e56e5#9a80a1976f854061f719f66951c67a03f3bc87e6"
+  integrity sha512-a/EAZRRGKMlnzuI9iWiNnGl9L73fvAC+XnYqaeLUs4lwxLY686o0rMpCpZmuNzSRhrIYbpVpi2giSUTQaioDRA==
+  dependencies:
+    create-hash "^1.2.0"
+    long "^4.0.0"
+    randombytes "^2.1.0"
+
 "@tixl/tixl-types@0.6.7":
   version "0.6.7"
   resolved "https://npm.pkg.github.com/download/@tixl/tixl-types/0.6.7/4de3b86fbca889a4fb923e3e0727cb8621e70bc433af21fe4853bafcd158dc21#8c9d3471dfa9d2e46c8428d4e1833d82f42e9366"
@@ -1680,6 +1696,11 @@ lodash@4.17.19:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
   integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
 
+long@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
+  integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
+
 loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -2280,6 +2301,15 @@ repeat-string@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/repeat-string/-/repeat-string-1.6.1.tgz#8dcae470e1c88abc2d600fff4a776286da75e637"
   integrity sha1-jcrkcOHIirwtYA//Sndihtp15jc=
+
+replace-in-file@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/replace-in-file/-/replace-in-file-4.2.0.tgz#be779f4f61a8ee1ab9f917998bd36441673680fe"
+  integrity sha512-9PGYDbU8iQF3W5a0Ariaf4KzYjsZSkonCYiZylwMiYOu0w5Bg9IuT4DqNnibA4zGNVxH//F7Hxh1P25TofAHGw==
+  dependencies:
+    chalk "^2.4.2"
+    glob "^7.1.4"
+    yargs "^13.3.0"
 
 require-directory@^2.1.1:
   version "2.1.1"
@@ -2954,7 +2984,7 @@ yargs-parser@^13.1.2:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs@^13.3.2:
+yargs@^13.3.0, yargs@^13.3.2:
   version "13.3.2"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-13.3.2.tgz#ad7ffefec1aa59565ac915f82dccb38a9c31a2dd"
   integrity sha512-AX3Zw5iPruN5ie6xGRIDgqkT+ZhnRlZMLMHAs8tg7nRruy2Nb+i5o9bwghAogtM08q1dpr2LVoS8KSTMYpWXUw==

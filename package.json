@@ -3,10 +3,11 @@
   "version": "0.1.3",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "yarn build:js && yarn build:package && yarn build:worker && yarn build:lib",
+    "build": "yarn build:js && yarn build:package && yarn build:worker && yarn build:lib && yarn build:nodejs",
     "build:js": "tsc",
     "build:package": "cp src/_package.json dist/package.json && touch dist/.npmignore && cp .yarnrc dist/",
     "build:worker": "npx webpack --config web-worker/webpack.config.js",
+    "build:nodejs": "tsc -p node-js/tsconfig.json",
     "build:lib": "cp lib/ntru/dist/ntru.js dist/ntru.js && cp lib/pedersen/dist/pedersen.js dist/secp256k1.js && cp lib/pedersen/prebuilt/libsecp256k1.js dist/libsecp256k1.js"
   },
   "files": [
@@ -15,6 +16,8 @@
     "dist/**/*.d.ts"
   ],
   "dependencies": {
+    "@tixl/tixl-ntru": "0.1.11",
+    "@tixl/tixl-pedersen-commitments": "2.1.1",
     "@tixl/tixl-types": "0.6.7",
     "@types/react": "16.9.43",
     "@types/react-redux": "7.1.9",
