@@ -4,7 +4,7 @@ import { commit, blindSum, rangeProofSign } from '@tixl/tixl-pedersen-commitment
 import { Crypto } from '@tixl/tixl-types';
 
 import { encrypt as NTRUenc, decrypt as NTRUdec, keyPair } from './encryption/NTRU';
-import pad16Bytes from '../../src/helpers/pad';
+import pad16Bytes from '../helpers/pad';
 
 /**
  * Creates the crypto environment for nodejs.
