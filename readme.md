@@ -9,17 +9,15 @@ The SDK provides builds for different environments:
 
 ## Repo structure
 
-`node-js/` folder contains the TS build for the Node.js environment. Build it with `yarn build:nodejs`.
-
 `web-worker/` folder contains a webpack + TS based build to run in a browser environment. Build it with `yarn build:worker`.
 
-`src/` folder contains mostly shared TS code.
+`src/` folder contains shared and node-js code.
 
 ## Modules
 
 - `@tixl/tixl-sdk-js/redux/`
 - `@tixl/tixl-sdk-js/web-worker`
-- `@tixl/tixl-sdk-js/node.js`
+- `@tixl/tixl-sdk-js/node-js`
 
 ## Registry package
 

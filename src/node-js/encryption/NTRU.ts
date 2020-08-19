@@ -1,4 +1,3 @@
-// @ts-ignore
 import tixlNtru from '@tixl/tixl-ntru';
 import { NTRUPublicKey, NTRUPrivateKey } from '@tixl/tixl-types';
 
