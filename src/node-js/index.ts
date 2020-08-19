@@ -1,6 +1,6 @@
 import { Crypto } from '@tixl/tixl-types';
 
-import Wallet from '../../src/wallet';
+import Wallet from '../wallet';
 
 export { createCrypto } from './crypto';
 
