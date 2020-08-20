@@ -59,7 +59,7 @@ export function createAccountChain() {
       accountChain = await getBlockchain(state.keys);
       dispatch(updateChain(accountChain));
     } catch (err) {
-      if (err instanceof BlockchainNotFoundError) {
+      if (err.name === BlockchainNotFoundError.errorName) {
         const createAccountChainResult = await runOnWorker<BlockchainTx>('createAccountChain', state.keys);
 
         if (!createAccountChainResult) return;
