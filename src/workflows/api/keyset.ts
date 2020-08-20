@@ -9,10 +9,10 @@ export async function keySet(crypto: Crypto): Promise<KeySet> {
   return keySetSeeded(crypto, generatePrivateKey(crypto));
 }
 
-export async function keySetSeeded(crypto: Crypto, seed: any): Promise<KeySet> {
-  const privateKey = seed;
-  const aes = crypto.base64.toString(privateKey);
-  const sig = signatureKeyPair(privateKey);
+export async function keySetSeeded(crypto: Crypto, privateKey: string): Promise<KeySet> {
+  const pkBuffer = Buffer.from(privateKey);
+  const aes = crypto.base64.toString(pkBuffer);
+  const sig = signatureKeyPair(pkBuffer);
   const ntru = await ntruKeyPair(crypto);
 
   return {

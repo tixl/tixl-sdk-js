@@ -5,11 +5,11 @@ import { verifySignature as _verifySignature } from './signatures';
 
 export function verifyRangeProof(proof: Buffer) {
   const infos = rangeGetInfo(proof);
-  const isGreaterThanZero = BigInt(infos.min) >= 0n;
+  const isGreaterThanZero = BigInt(infos.min) >= BigInt(0);
 
   // rangeproof info returns the maximum as a power of 2
   // using a proof of the maximum tixl amount will not exceed 2^63
-  const isSmallerThanMaxSupply = BigInt(infos.max) < 2n ** 63n;
+  const isSmallerThanMaxSupply = BigInt(infos.max) < BigInt(2) ** BigInt(63);
 
   return isGreaterThanZero && isSmallerThanMaxSupply;
 }

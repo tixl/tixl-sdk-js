@@ -1,22 +1,34 @@
 import { Dispatch } from 'redux';
 import { AESPrivateKey, Block, BlockType, KeySet, SigPublicKey } from '@tixl/tixl-types';
 
-import { ThunkDispatch } from '..';
+import { ThunkDispatch, RootState } from '..';
 import { runOnWorker } from '../../helpers/worker';
 import { GENERATE_KEYS, GENERATE_KEYS_SUCCESS, RESTORE_KEYS_SUCCESS } from './actionKeys';
-import fetchBlockchain from '../../requests/getBlockchain';
 import { updateChain } from '../chains/actions';
+import { getKeys } from './selectors';
+import fetchBlockchain from '../../requests/getBlockchain';
 
-export const generateKeys = () => {
+export const generateKeys = (mnemonicSeed?: Uint8Array) => {
   return async (dispatch: Dispatch) => {
     dispatch({ type: GENERATE_KEYS });
 
-    const keySet = await runOnWorker<KeySet>('keySet');
+    const keySet = mnemonicSeed
+      ? await runOnWorker<KeySet>('keySetSeeded', mnemonicSeed)
+      : await runOnWorker<KeySet>('keySet');
 
     dispatch({
       type: GENERATE_KEYS_SUCCESS,
       keySet,
     });
+  };
+};
+
+export const restoreKeysFromState = (setError: (err: string) => void) => {
+  return async (dispatch: ThunkDispatch, getState: () => RootState) => {
+    const state = getState();
+    const keys = getKeys(state);
+
+    return dispatch(restoreKeys(keys.aes, setError));
   };
 };
 

@@ -6,23 +6,24 @@ export function getBlockchain(keySet: KeySet) {
 }
 
 export class BlockchainNotFoundError extends Error {
+  static errorName = 'BlockchainNotFoundError';
   constructor(message: string) {
     super(message);
-    this.name = 'BlockchainNotFoundError';
+    this.name = BlockchainNotFoundError.errorName;
   }
 }
 
 export default function fetchBlockchain(sig: SigPublicKey): Promise<Blockchain> {
   return axios
     .get(process.env.REACT_APP_GATEWAY + `/blockchain?signaturePublicKey=${sig}&full=true`)
-    .then(res => {
+    .then((res) => {
       if (!res.data || !res.data.blockchain) {
         throw new BlockchainNotFoundError(`Could not find blockchain for ${sig}`);
       }
 
       return fromBlockchainObject(res.data.blockchain);
     })
-    .catch(err => {
+    .catch((err) => {
       if (!err.response) {
         throw err;
       } else if (err.response.status === 404) {
