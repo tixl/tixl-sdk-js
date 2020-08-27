@@ -2,7 +2,7 @@ import JSBI from 'jsbi';
 import { KeySet, Blockchain, BlockType, Crypto, AssetSymbol } from '@tixl/tixl-types';
 
 import { decryptPayload, decryptSender } from './encryption';
-import { workingCopy } from '../utils';
+import { workingCopy, BlockchainIndex } from '../utils';
 
 /**
  * Used to search for sufficient funds on an account.
@@ -21,7 +21,7 @@ export async function searchFunds(
   acKeySet: KeySet,
   amount: string | number | bigint,
   symbol: AssetSymbol,
-  loader: Record<string, Blockchain | undefined>,
+  loader: BlockchainIndex,
 ): Promise<SearchFundResult[] | false> {
   const accountchainCopy = workingCopy(accountchain);
   const result: SearchFundResult[] = [];

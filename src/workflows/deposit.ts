@@ -4,7 +4,7 @@ import { Blockchain, Crypto, KeySet, AssetSymbol, Transaction } from '@tixl/tixl
 import { decryptSender } from './api/encryption';
 import { createDepositBlock } from './api/deposit';
 import { findStealthchainKeySet, appendStealthChain } from './stealthchain';
-import { workingCopy } from './utils';
+import { workingCopy, BlockchainIndex } from './utils';
 
 export type DepositChanges = {
   accountChainOpen:
@@ -79,7 +79,7 @@ export async function deposit(
   extAddress: string,
   symbol: AssetSymbol,
   stealthChainId: string,
-  chainLoader: Record<string, Blockchain | undefined>,
+  loader: BlockchainIndex,
   claimSignature?: string,
 ): Promise<DepositChanges> {
   // load stealth chain
@@ -94,7 +94,7 @@ export async function deposit(
     stealthchain = create.stealthchain.blockchain;
     scKeySet = create.scKeySet;
   } else {
-    stealthchain = chainLoader[scKeySet.sig.publicKey as string];
+    stealthchain = loader[scKeySet.sig.publicKey as string];
   }
 
   if (!stealthchain) throw 'could not load or create stealthchain';

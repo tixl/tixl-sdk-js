@@ -2,7 +2,7 @@ import JSBI from 'jsbi';
 
 import { Blockchain, Crypto, BlockType, KeySet, Block, AssetSymbol } from '@tixl/tixl-types';
 import { decryptPayload, decryptSender } from './api/encryption';
-import { workingCopy } from './utils';
+import { workingCopy, BlockchainIndex } from './utils';
 
 /**
  * Sum the sender balances of the blockchains.
@@ -31,7 +31,7 @@ export async function calcBalance(
   crypto: Crypto,
   blockchain: Blockchain,
   keySet: KeySet,
-  loader: Record<string, Blockchain | undefined>,
+  loader: BlockchainIndex,
   symbol: AssetSymbol,
 ): Promise<string> {
   const blockchainCopy = workingCopy(blockchain);

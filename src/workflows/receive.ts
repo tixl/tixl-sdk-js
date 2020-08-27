@@ -4,7 +4,7 @@ import { Block, Blockchain, Crypto, KeySet, AssetSymbol, Transaction } from '@ti
 import { createReceiveBlock } from './api/receive';
 import { decryptSender } from './api/encryption';
 import { findStealthchainKeySet, appendStealthChain } from './stealthchain';
-import { workingCopy } from './utils';
+import { workingCopy, BlockchainIndex } from './utils';
 
 export type ReceiveTx = {
   blockchain: Blockchain;
@@ -80,7 +80,7 @@ export async function receive(
   accountchain: Blockchain,
   send: Block,
   stealthId: string,
-  chainLoader: Record<string, Blockchain | undefined>,
+  loader: BlockchainIndex,
   symbol: AssetSymbol,
 ): Promise<ReceiveChanges> {
   // load stealth chain
@@ -95,7 +95,7 @@ export async function receive(
     stealthchain = create.stealthchain.blockchain;
     scKeySet = create.scKeySet;
   } else {
-    stealthchain = chainLoader[scKeySet.sig.publicKey as string];
+    stealthchain = loader[scKeySet.sig.publicKey as string];
   }
 
   if (!stealthchain) throw 'could not load or create stealthchain';

@@ -13,7 +13,7 @@ import {
 import { createSendBlock } from './api/send';
 import { decryptSender } from './api/encryption';
 import { searchFunds } from './api/funds';
-import { workingCopy } from './utils';
+import { workingCopy, BlockchainIndex } from './utils';
 
 export type SendTx = {
   blockchain: Blockchain;
@@ -66,7 +66,7 @@ export async function send(
   amount: string | number | bigint,
   address: NTRUPublicKey,
   symbol: AssetSymbol,
-  loader: Record<string, Blockchain | undefined>,
+  loader: BlockchainIndex,
 ): Promise<BlockchainTx[] | false> {
   // gather list of stealthchains with sufficient amounts
   const stealthchains = await searchFunds(crypto, accountChain, keySet, amount, symbol, loader);

@@ -4,7 +4,7 @@ import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx } from '@tixl/tix
 import { decryptSender } from './api/encryption';
 import { createWithdrawalBlock } from './api/withdraw';
 import { searchFunds } from './api/funds';
-import { workingCopy } from './utils';
+import { workingCopy, BlockchainIndex } from './utils';
 
 export async function withdrawTx(
   crypto: Crypto,
@@ -52,7 +52,7 @@ export async function withdraw(
   amount: string | number | bigint,
   address: string,
   symbol: AssetSymbol,
-  loader: Record<string, Blockchain | undefined>,
+  loader: BlockchainIndex,
 ): Promise<BlockchainTx[] | false> {
   // gather list of stealthchains with sufficient amounts
   const stealthchains = await searchFunds(crypto, accountChain, keySet, amount, symbol, loader);
