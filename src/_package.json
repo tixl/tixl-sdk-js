@@ -1,5 +1,5 @@
 {
-  "name": "@tixl/tixl-sdk-js",
+  "name": "@tixl/tixl-sdk-js-public",
   "version": "0.1.9",
   "dependencies": {
     "@tixl/tixl-ntru": "0.1.11",

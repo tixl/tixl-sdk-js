@@ -1,8 +1,7 @@
 import JSBI from 'jsbi';
 
 import { Blockchain, Crypto, BlockType, KeySet, Block, AssetSymbol } from '@tixl/tixl-types';
-import { decryptPayload, decryptSender } from './api/encryption';
-import { workingCopy, BlockchainIndex } from './utils';
+import { workingCopy } from './utils';
 
 /**
  * Sum the sender balances of the blockchains.

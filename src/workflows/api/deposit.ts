@@ -1,5 +1,4 @@
 import {
-  AESPrivateKey,
   SigPrivateKey,
   Crypto,
   Block,
@@ -11,11 +10,10 @@ import {
 } from '@tixl/tixl-types';
 
 import { blockFields } from './open';
-import { encryptSender } from './encryption';
 import { signBlock } from './signatures';
 
 export async function createDepositBlock(
-  crypto: Crypto,
+  _crypto: Crypto,
   prev: Block,
   publicSig: SigPublicKey,
   externalAddress: string,
@@ -24,7 +22,6 @@ export async function createDepositBlock(
   symbol: AssetSymbol,
   claimSignature?: string,
   signatureKey?: SigPrivateKey,
-  aesKey?: AESPrivateKey,
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.DEPOSIT;
@@ -32,11 +29,7 @@ export async function createDepositBlock(
   block.claimSignature = claimSignature;
   block.refAsset = externalAddress;
 
-  await blockFields(crypto, block, { prev, amount, balance });
-
-  if (aesKey) {
-    await encryptSender(crypto, block, aesKey, { publicFunds: true });
-  }
+  await blockFields(block, { prev, amount, balance });
 
   if (signatureKey) {
     signBlock(block, signatureKey);

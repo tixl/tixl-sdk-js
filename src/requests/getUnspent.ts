@@ -7,4 +7,4 @@ export const getUnspent = async (
 ): Promise<{ blocks: Block[]; earliest: number | null; latest: number | null }> =>
   axios
     .get(process.env.REACT_APP_GATEWAY + `/unspent?fromTimestamp=${fromTimestamp}&toTimestamp=${toTimestamp}`)
-    .then(res => res.data);
+    .then((res) => res.data);
