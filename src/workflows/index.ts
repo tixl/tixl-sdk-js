@@ -1,6 +1,5 @@
 export { keySet, keySetSeeded, getPublicSig } from './api/keyset';
 export { createAccountChain } from './accountchain';
-export { appendStealthChain, findStealthchainKeySet, AppendStealthChainChanges } from './stealthchain';
 export { calcBalance } from './balance';
 export { send, sendTx } from './send';
 export { receive, receiveTx } from './receive';

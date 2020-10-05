@@ -30,49 +30,12 @@ export async function calcBalance(
   crypto: Crypto,
   blockchain: Blockchain,
   keySet: KeySet,
-  loader: BlockchainIndex,
   symbol: AssetSymbol,
 ): Promise<string> {
   const blockchainCopy = workingCopy(blockchain);
-  const balanceBlocks: Block[] = [];
+  const assetBlock = blockchainCopy.leafAsset(symbol);
 
-  // TODO remove? expect an accountchain to store TIXL
-  if (symbol === AssetSymbol.TXL) {
-    // add accountchain leaf block to sum
-    const acLeaf = blockchainCopy.leaf();
-    if (!acLeaf) throw 'accountchain without leaf block';
+  if (!assetBlock) return '0';
 
-    const acLeafCopy = workingCopy(acLeaf);
-    await decryptSender(crypto, acLeafCopy, keySet.aes);
-
-    balanceBlocks.push(acLeafCopy);
-  }
-
-  // add stealthchain leaf blocks to sum
-  await Promise.all(
-    blockchainCopy.blocks.map(async (block) => {
-      if (block.type !== BlockType.OPENING || !block.prev) return;
-
-      const blockCopy = workingCopy(block);
-
-      await decryptPayload(crypto, blockCopy, keySet.aes);
-      const scKeySet = JSON.parse(blockCopy.payload) as KeySet;
-      if (!scKeySet) throw 'stealthchain opening block without keyset';
-
-      const stealthchain = loader[scKeySet.sig.publicKey as string];
-
-      if (!stealthchain) return;
-      if (stealthchain.assetSymbol !== symbol) return;
-
-      const scLeaf = stealthchain.leaf();
-      if (!scLeaf) return;
-
-      const scLeafCopy = workingCopy(scLeaf);
-      await decryptSender(crypto, scLeafCopy, scKeySet.aes);
-
-      balanceBlocks.push(scLeafCopy);
-    }),
-  );
-
-  return sumBalance(balanceBlocks);
+  return assetBlock.senderBalance;
 }

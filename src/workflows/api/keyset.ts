@@ -1,4 +1,4 @@
-import { Crypto, KeySet, SigPublicKey, Blockchain, SigPrivateKey } from '@tixl/tixl-types';
+import { Crypto, KeySet, SigPublicKey, SigPrivateKey } from '@tixl/tixl-types';
 import { Buffer } from 'buffer';
 
 import { signatureKeyPair, generatePrivateKey } from './signatures';
@@ -7,7 +7,7 @@ export async function keySet(crypto: Crypto): Promise<KeySet> {
   return keySetSeeded(crypto, generatePrivateKey(crypto));
 }
 
-export async function keySetSeeded(crypto: Crypto, privateKey: string): Promise<KeySet> {
+export async function keySetSeeded(_crypto: Crypto, privateKey: string): Promise<KeySet> {
   const pkBuffer = Buffer.from(privateKey);
   const sig = signatureKeyPair(pkBuffer);
 
@@ -16,7 +16,7 @@ export async function keySetSeeded(crypto: Crypto, privateKey: string): Promise<
   };
 }
 
-export async function keySetFromPk(crypto: Crypto, sigPK: SigPrivateKey): Promise<KeySet> {
+export async function keySetFromPk(_crypto: Crypto, sigPK: SigPrivateKey): Promise<KeySet> {
   const sig = signatureKeyPair(sigPK);
 
   return {

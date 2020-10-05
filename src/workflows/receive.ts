@@ -2,9 +2,8 @@ import JSBI from 'jsbi';
 import { Block, Blockchain, Crypto, KeySet, AssetSymbol, Transaction } from '@tixl/tixl-types';
 
 import { createReceiveBlock } from './api/receive';
-import { decryptSender } from './api/encryption';
-import { findStealthchainKeySet, appendStealthChain } from './stealthchain';
-import { workingCopy, BlockchainIndex } from './utils';
+import { workingCopy } from './utils';
+import { assetTx } from './api/asset';
 
 export type ReceiveTx = {
   blockchain: Blockchain;
@@ -13,19 +12,13 @@ export type ReceiveTx = {
 };
 
 export type ReceiveChanges = {
-  accountchainOpen:
+  accountchainAsset:
     | {
         tx: Transaction;
         blockchain: Blockchain;
       }
     | undefined;
-  stealthchainOpen:
-    | {
-        tx: Transaction;
-        blockchain: Blockchain;
-      }
-    | undefined;
-  stealthchainReceive: {
+  assetReceive: {
     tx: Transaction;
     blockchain: Blockchain;
   };
@@ -35,17 +28,13 @@ export async function receiveTx(
   crypto: Crypto,
   keySet: KeySet,
   blockchain: Blockchain,
+  prev: Block,
   send: Block,
   symbol: AssetSymbol,
 ): Promise<ReceiveTx> {
   const blockchainCopy = workingCopy(blockchain);
-  const prev = workingCopy(blockchainCopy.leaf());
 
-  if (!prev) throw 'no leaf for chain found';
-
-  await decryptSender(crypto, prev, keySet.aes);
-
-  const newBalance = JSBI.add(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(send.receiverAmount));
+  const newBalance = JSBI.add(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(send.senderAmount));
   console.log('receive balance', newBalance);
 
   const receive2wallet = await createReceiveBlock(
@@ -53,11 +42,10 @@ export async function receiveTx(
     prev,
     send,
     blockchainCopy.publicSig,
-    send.receiverAmount,
+    send.senderAmount,
     newBalance.toString(),
     symbol,
     keySet.sig.privateKey,
-    keySet.aes,
   );
 
   blockchainCopy.addBlock(receive2wallet.block);
@@ -79,35 +67,40 @@ export async function receive(
   acKeySet: KeySet,
   accountchain: Blockchain,
   send: Block,
-  stealthId: string,
-  loader: BlockchainIndex,
   symbol: AssetSymbol,
 ): Promise<ReceiveChanges> {
-  // load stealth chain
-  let stealthchain: Blockchain | undefined;
-  let scKeySet = await findStealthchainKeySet(crypto, accountchain, acKeySet, stealthId);
+  // load asset block
+  // if none then create asset block
+  // create receive post asset block
+  //
 
-  // if not exist => append stealthchain (id = stealthId)
+  const accountChainCopy = workingCopy(accountchain);
+  const leaf = accountChainCopy.leafAsset(symbol);
+
   let create;
+  let receive;
 
-  if (!scKeySet) {
-    create = await appendStealthChain(crypto, accountchain, acKeySet, stealthId, symbol);
-    stealthchain = create.stealthchain.blockchain;
-    scKeySet = create.scKeySet;
+  if (!leaf) {
+    create = await assetTx(crypto, acKeySet, accountChainCopy, symbol);
+
+    const assetLeaf = create.blockchain.leafAsset(symbol);
+
+    if (!assetLeaf) throw 'cannot add asset block';
+
+    receive = await receiveTx(crypto, acKeySet, create.blockchain, assetLeaf, send, symbol);
   } else {
-    stealthchain = loader[scKeySet.sig.publicKey as string];
+    receive = await receiveTx(crypto, acKeySet, accountChainCopy, leaf, send, symbol);
   }
 
-  if (!stealthchain) throw 'could not load or create stealthchain';
-
   // receiveTx on stealthchain
-  const receive = await receiveTx(crypto, scKeySet, stealthchain, send, symbol);
 
   // return all writable TX
   return {
-    accountchainOpen: create && create.accountchain,
-    stealthchainOpen: create && create.stealthchain,
-    stealthchainReceive: {
+    accountchainAsset: create && {
+      tx: create.tx,
+      blockchain: create.blockchain,
+    },
+    assetReceive: {
       tx: receive.tx,
       blockchain: receive.blockchain,
     },
