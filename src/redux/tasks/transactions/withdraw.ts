@@ -36,7 +36,6 @@ export const createWithdrawBlock = (amount: string, btcAddress: string) => {
       amount,
       btcAddress,
       AssetSymbol.BTC,
-      loader,
     );
 
     if (!withdrawResult) return;

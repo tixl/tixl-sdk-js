@@ -1,25 +1,19 @@
 import JSBI from 'jsbi';
 import { Blockchain, Crypto, KeySet, AssetSymbol, Transaction } from '@tixl/tixl-types';
 
-import { decryptSender } from './api/encryption';
 import { createDepositBlock } from './api/deposit';
-import { findStealthchainKeySet, appendStealthChain } from './stealthchain';
-import { workingCopy, BlockchainIndex } from './utils';
+import { workingCopy } from './utils';
+import { assetTx } from './api/asset';
+import { doesNotMatch } from 'assert';
 
 export type DepositChanges = {
-  accountChainOpen:
+  accountchainAsset:
     | {
         tx: Transaction;
         blockchain: Blockchain;
       }
     | undefined;
-  stealthChainOpen:
-    | {
-        tx: Transaction;
-        blockchain: Blockchain;
-      }
-    | undefined;
-  stealthChainDeposit: {
+  assetDeposit: {
     tx: Transaction;
     blockchain: Blockchain;
   };
@@ -39,8 +33,6 @@ export async function depositTx(
 
   if (!leaf) throw 'no leaf for chain found';
 
-  await decryptSender(crypto, leaf, keySet.aes);
-
   const newBalance = JSBI.add(JSBI.BigInt(leaf.senderBalance), JSBI.BigInt(amount.toString()));
   console.log('deposit new balance', newBalance);
 
@@ -54,7 +46,6 @@ export async function depositTx(
     symbol,
     claimSignature,
     keySet.sig.privateKey,
-    keySet.aes,
   );
 
   blockchainCopy.addBlock(deposit2wallet.block);
@@ -78,35 +69,32 @@ export async function deposit(
   amount: string | number | bigint,
   extAddress: string,
   symbol: AssetSymbol,
-  stealthChainId: string,
-  loader: BlockchainIndex,
   claimSignature?: string,
 ): Promise<DepositChanges> {
-  // load stealth chain
-  let stealthchain: Blockchain | undefined;
-  let scKeySet = await findStealthchainKeySet(crypto, accountchain, acKeySet, stealthChainId);
+  const accountChainCopy = workingCopy(accountchain);
+  const leaf = accountChainCopy.leafAsset(symbol);
 
-  // if not exist => append stealthchain (id = stealthId)
   let create;
+  let deposit;
 
-  if (!scKeySet) {
-    create = await appendStealthChain(crypto, accountchain, acKeySet, stealthChainId, symbol);
-    stealthchain = create.stealthchain.blockchain;
-    scKeySet = create.scKeySet;
+  if (!leaf) {
+    create = await assetTx(crypto, acKeySet, accountChainCopy, symbol);
+
+    const assetLeaf = create.blockchain.leafAsset(symbol);
+
+    if (!assetLeaf) throw 'cannot add asset block';
+
+    deposit = await depositTx(crypto, acKeySet, create.blockchain, amount, extAddress, symbol, claimSignature);
   } else {
-    stealthchain = loader[scKeySet.sig.publicKey as string];
+    deposit = await depositTx(crypto, acKeySet, accountChainCopy, amount, extAddress, symbol, claimSignature);
   }
 
-  if (!stealthchain) throw 'could not load or create stealthchain';
-
-  // deposit on stealthchain
-  const deposit = await depositTx(crypto, scKeySet, stealthchain, amount, extAddress, symbol, claimSignature);
-
-  // return all writable TX
   return {
-    accountChainOpen: create && create.accountchain,
-    stealthChainOpen: create && create.stealthchain,
-    stealthChainDeposit: {
+    accountchainAsset: create && {
+      tx: create.tx,
+      blockchain: create.blockchain,
+    },
+    assetDeposit: {
       tx: deposit.tx,
       blockchain: deposit.blockchain,
     },

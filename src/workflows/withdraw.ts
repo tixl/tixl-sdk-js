@@ -1,10 +1,9 @@
 import JSBI from 'jsbi';
 import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx } from '@tixl/tixl-types';
 
-import { decryptSender } from './api/encryption';
 import { createWithdrawalBlock } from './api/withdraw';
 import { searchFunds } from './api/funds';
-import { workingCopy, BlockchainIndex } from './utils';
+import { workingCopy } from './utils';
 
 export async function withdrawTx(
   crypto: Crypto,
@@ -19,8 +18,6 @@ export async function withdrawTx(
 
   if (!prev) throw 'no leaf for chain found';
 
-  await decryptSender(crypto, prev, keySet.aes);
-
   const newBalance = JSBI.subtract(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(amount.toString()));
   console.log('withdrawal new balance', newBalance);
 
@@ -33,7 +30,6 @@ export async function withdrawTx(
     newBalance.toString(),
     symbol,
     keySet.sig.privateKey,
-    keySet.aes,
   );
 
   blockchainCopy.addBlock(withdrawFromwallet.block);
@@ -52,17 +48,10 @@ export async function withdraw(
   amount: string | number | bigint,
   address: string,
   symbol: AssetSymbol,
-  loader: BlockchainIndex,
-): Promise<BlockchainTx[] | false> {
-  // gather list of stealthchains with sufficient amounts
-  const stealthchains = await searchFunds(crypto, accountChain, keySet, amount, symbol, loader);
+): Promise<BlockchainTx | false> {
+  const funds = await searchFunds(accountChain, amount, symbol);
 
-  if (!stealthchains) return false;
+  if (!funds) return false;
 
-  // create withdraw blocks on all these stealthchains
-  return Promise.all(
-    stealthchains.map(async (fund) => {
-      return withdrawTx(crypto, fund.keySet, fund.stealthChain, fund.amount, address, symbol);
-    }),
-  );
+  return withdrawTx(crypto, keySet, accountChain, amount, address, symbol);
 }

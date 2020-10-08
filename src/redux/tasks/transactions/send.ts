@@ -5,7 +5,6 @@ import { SendTaskData } from '../actionTypes';
 import { progressTask, waitNetwork, signalSend } from '../actions';
 import { getKeys } from '../../keys/selectors';
 import { getAccountChain } from '../../chains/selectors';
-import getNtruPublicKey from '../../../requests/getNtruPublicKey';
 import { runOnWorker } from '../../../helpers/worker';
 import { postTransaction } from '../../../requests/postTransaction';
 import { updateChain } from '../../chains/actions';
@@ -34,12 +33,9 @@ export function createSendTransaction(address: string, amount: string, symbol: A
     const state = getState();
     const keys = getKeys(state);
     const accountChain = getAccountChain(state);
-    const ntruPublicKey = await getNtruPublicKey(address);
     const { signatureToChain } = state.chains;
     const loader = signatureToChain;
 
-    // check if the required data from redux is available
-    if (!ntruPublicKey) return;
     if (!keys || !accountChain) return;
 
     // check if the user has enough funds to avoid sending a block to backend before
@@ -50,9 +46,8 @@ export function createSendTransaction(address: string, amount: string, symbol: A
       keys,
       accountChain,
       amount.toString(),
-      ntruPublicKey,
+      address,
       symbol,
-      loader,
     );
 
     if (!sendUpdate) return;

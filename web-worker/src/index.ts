@@ -16,7 +16,6 @@ import {
   scanAllUnspentBlocks,
   deposit,
   withdraw,
-  appendStealthChain,
   createAccountChain,
   receive,
   send,
@@ -82,9 +81,6 @@ onmessage = function (event: EventData) {
         break;
       case 'withdraw':
         res = await withdraw.apply(self, params);
-        break;
-      case 'appendStealthChain':
-        res = await appendStealthChain.apply(self, params);
         break;
       case 'createAccountChain':
         res = await createAccountChain.apply(self, params);

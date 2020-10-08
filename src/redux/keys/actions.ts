@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { AESPrivateKey, Block, BlockType, KeySet, SigPublicKey } from '@tixl/tixl-types';
+import { KeySet, SigPrivateKey, SigPublicKey } from '@tixl/tixl-types';
 
 import { ThunkDispatch, RootState } from '..';
 import { runOnWorker } from '../../helpers/worker';
@@ -28,15 +28,15 @@ export const restoreKeysFromState = (setError: (err: string) => void) => {
     const state = getState();
     const keys = getKeys(state);
 
-    return dispatch(restoreKeys(keys.aes, setError));
+    return dispatch(restoreKeys(keys.sig.privateKey, setError));
   };
 };
 
-export const restoreKeys = (aes: AESPrivateKey, setError: (err: string) => void) => {
+export const restoreKeys = (sigPk: SigPrivateKey, setError: (err: string) => void) => {
   return async (dispatch: ThunkDispatch) => {
     // restore public sig key to load account chain
     try {
-      const publicSigKey = await runOnWorker<SigPublicKey>('getPublicSig', aes);
+      const publicSigKey = await runOnWorker<SigPublicKey>('getPublicSig', sigPk);
 
       if (!publicSigKey) return;
       console.log('restored public signature key', { publicSigKey });
@@ -48,32 +48,12 @@ export const restoreKeys = (aes: AESPrivateKey, setError: (err: string) => void)
         return;
       }
 
-      // decrypt opening block and read full keyset
-      const opening = { ...accountChain.openingBlock() } as Block;
-      const decryptedOpening = await runOnWorker<Block>('decryptPayload', opening, aes);
-
-      if (!decryptedOpening) return;
-
-      const keySet = JSON.parse(decryptedOpening.payload);
-
-      // decrypt opening blocks and refetch stealthchains
-      await Promise.all(
-        accountChain.blocks.map(async (block) => {
-          if (block.type !== BlockType.OPENING || !block.prev) return;
-
-          const blockCopy = { ...block } as Block;
-          const decryptedBlock = await runOnWorker<Block>('decryptPayload', blockCopy, aes);
-
-          if (!decryptedBlock) return;
-
-          const stealtchChainKeys = JSON.parse(decryptedBlock.payload) as KeySet;
-          const stealthChain = await fetchBlockchain(stealtchChainKeys.sig.publicKey);
-
-          if (stealthChain) {
-            dispatch(updateChain(stealthChain, 'accepted'));
-          }
-        }),
-      );
+      const keySet: KeySet = {
+        sig: {
+          privateKey: sigPk,
+          publicKey: publicSigKey,
+        },
+      };
 
       dispatch({
         type: RESTORE_KEYS_SUCCESS,

@@ -9,7 +9,6 @@ import {
   UPDATE_BLOCK_STATE_ACCEPTED,
   UPDATE_CHAIN,
 } from './actionKeys';
-import { AppendStealthChainChanges } from '../../workflows/stealthchain';
 import fetchBlockchain, { BlockchainNotFoundError, getBlockchain } from '../../requests/getBlockchain';
 import { postTransaction } from '../../requests/postTransaction';
 import { getAccountChain, getChain } from './selectors';
@@ -126,41 +125,6 @@ export function updateBlockState(signature: Signature, blockState: BlockState): 
   return {
     type: blockState === 'accepted' ? UPDATE_BLOCK_STATE_ACCEPTED : UPDATE_BLOCK_STATE_REJECTED,
     signature,
-  };
-}
-
-export function createAssetChain(symbol: AssetSymbol) {
-  return async (dispatch: ThunkDispatch, getState: () => RootState) => {
-    const state = getState();
-    const keys = state.keys;
-    const existingAccountChainObject = getAccountChain(state);
-    const existingAccountChain = fromBlockchainObject(existingAccountChainObject);
-
-    if (existingAccountChain && keys) {
-      const id = `assetChain${symbol}`;
-      const stealthChainOp = await runOnWorker<AppendStealthChainChanges>(
-        'appendStealthChain',
-        existingAccountChain,
-        keys,
-        id,
-        symbol,
-      );
-
-      if (!stealthChainOp) return;
-
-      const { accountchain: accountChainResult, stealthchain: stealthChainResult } = stealthChainOp;
-
-      const mergedAccountChain = mergeChains(existingAccountChainObject, accountChainResult.blockchain);
-      const mergedStealthChain = mergeChains(null, stealthChainResult.blockchain);
-
-      dispatch(updateChain(mergedAccountChain));
-      dispatch(updateChain(mergedStealthChain));
-
-      // I'd suggest that we extract the following code into sagas because if the request dies or can not be executed
-      // due to a bad internet connection that will result in a never synced opening block
-      await postTransaction(stealthChainResult.tx);
-      await postTransaction(accountChainResult.tx);
-    }
   };
 }
 

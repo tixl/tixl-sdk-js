@@ -38,31 +38,25 @@ export async function handleReceiveTask(
 
   if (fullBlock !== undefined) {
     try {
-      const decryptedBlock = await runOnWorker<Block>('decryptReceiver', fullBlock, keySet.ntru.private);
+      if (task.symbol) {
+        const signatures = await dispatch(createReceiveTransaction(fullBlock, task.symbol));
 
-      if (decryptedBlock) {
-        if (task.symbol) {
-          const signatures = await dispatch(createReceiveTransaction(decryptedBlock, task.symbol));
+        if (signatures) {
+          dispatch(waitNetwork(task, signatures));
+        }
+      } else {
+        const correspondingChainInfo = await getBlockchainInfo(task.sendSignature);
 
-          if (signatures) {
-            dispatch(waitNetwork(task, signatures));
-          }
-        } else {
-          const correspondingChainInfo = await getBlockchainInfo(task.sendSignature);
+        if (!correspondingChainInfo) {
+          console.error('Cannot fetch assetsymbol for send block: send chain probably unknown');
+          dispatch(abortTask(task.id));
+          return;
+        }
 
-          if (!correspondingChainInfo) {
-            console.error('Cannot fetch assetsymbol for send block: send chain probably unknown');
-            dispatch(abortTask(task.id));
-            return;
-          }
+        const signatures = await dispatch(createReceiveTransaction(fullBlock, correspondingChainInfo.assetSymbol));
 
-          const signatures = await dispatch(
-            createReceiveTransaction(decryptedBlock, correspondingChainInfo.assetSymbol),
-          );
-
-          if (signatures) {
-            dispatch(waitNetwork(task, signatures));
-          }
+        if (signatures) {
+          dispatch(waitNetwork(task, signatures));
         }
       }
     } catch (error) {
@@ -92,34 +86,21 @@ export function createReceiveTransaction(send: Block, assetSymbol: AssetSymbol) 
     if (!accountChain) return;
     if (!keySet) return;
 
-    const receiveData = await runOnWorker<ReceiveChanges>(
-      'receive',
-      keySet,
-      accountChain,
-      send,
-      `assetChain${assetSymbol}`,
-      loader,
-      assetSymbol,
-    );
+    const receiveData = await runOnWorker<ReceiveChanges>('receive', keySet, accountChain, send, assetSymbol);
 
     if (!receiveData) return;
 
     const updates = [];
     const txs = [];
 
-    if (receiveData.accountchainOpen) {
-      updates.push(receiveData.accountchainOpen);
-      txs.push(receiveData.accountchainOpen.tx);
+    if (receiveData.accountchainAsset) {
+      updates.push(receiveData.accountchainAsset);
+      txs.push(receiveData.accountchainAsset.tx);
     }
 
-    if (receiveData.stealthchainOpen) {
-      updates.push(receiveData.stealthchainOpen);
-      txs.push(receiveData.stealthchainOpen.tx);
-    }
-
-    if (receiveData.stealthchainReceive) {
-      updates.push(receiveData.stealthchainReceive);
-      txs.push(receiveData.stealthchainReceive.tx);
+    if (receiveData.assetReceive) {
+      updates.push(receiveData.assetReceive);
+      txs.push(receiveData.assetReceive.tx);
     }
 
     // write updates to own state

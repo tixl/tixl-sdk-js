@@ -15,7 +15,7 @@ export async function scanUnspentBlocks(_crypto: Crypto, keySet: KeySet, unspent
   return found;
 }
 
-export async function scanAllUnspentBlocks(crypto: Crypto, keySet: KeySet, unspent: Block[]) {
+export async function scanAllUnspentBlocks(_crypto: Crypto, keySet: KeySet, unspent: Block[]) {
   const found: Block[] = [];
 
   for (let i = 0; i < unspent.length; i++) {

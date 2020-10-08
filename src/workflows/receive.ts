@@ -69,11 +69,6 @@ export async function receive(
   send: Block,
   symbol: AssetSymbol,
 ): Promise<ReceiveChanges> {
-  // load asset block
-  // if none then create asset block
-  // create receive post asset block
-  //
-
   const accountChainCopy = workingCopy(accountchain);
   const leaf = accountChainCopy.leafAsset(symbol);
 
@@ -92,9 +87,6 @@ export async function receive(
     receive = await receiveTx(crypto, acKeySet, accountChainCopy, leaf, send, symbol);
   }
 
-  // receiveTx on stealthchain
-
-  // return all writable TX
   return {
     accountchainAsset: create && {
       tx: create.tx,

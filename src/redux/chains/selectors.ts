@@ -38,27 +38,6 @@ export const getChain = (state: RootState, publicSig: SigPublicKey): BlockchainW
   return state.chains.signatureToChain[publicSig as string] || null;
 };
 
-export const getFirstChainBySymbol = (
-  state: RootState,
-  symbol: AssetSymbol = AssetSymbol.TXL,
-): Blockchain | undefined => {
-  const keys = Object.keys(state.chains.signatureToChain);
-
-  let assetChain: Blockchain | undefined;
-
-  keys.forEach((key) => {
-    if (!assetChain) {
-      const blockchain: Blockchain = state.chains.signatureToChain[key];
-
-      if (blockchain.assetSymbol === symbol) {
-        assetChain = blockchain;
-      }
-    }
-  });
-
-  return assetChain;
-};
-
 export const getDepositBlock = (state: RootState, btcTransactionHash: string): Block | null => {
   let depositBlock = null;
   const chainKeys = Object.keys(state.chains.signatureToChain);

@@ -2,13 +2,17 @@ import { Crypto, KeySet, AssetSymbol, Block } from '@tixl/tixl-types';
 
 import { keySet, keySetSeeded, calcBalance, send } from '../workflows';
 import { getBlockchain } from '../requests/getBlockchain';
-import { createLoader } from '../workflows/utils';
-import { postTransaction } from '../requests/postTransaction';
+import { postTransaction, PostTxResponse } from '../requests/postTransaction';
+import { GatewayErrors } from '../helpers/errors';
 
 export type Wallet = {
   keySet: KeySet;
   getBalance: (symbol: AssetSymbol) => Promise<string>;
-  transfer: (address: string, symbol: AssetSymbol, amount: string) => Promise<void>;
+  transfer: (
+    address: string,
+    symbol: AssetSymbol,
+    amount: string,
+  ) => Promise<PostTxResponse | GatewayErrors | undefined>;
   onTransfer: (handler: (block: Block) => any) => void;
   scan: (handler: (block: Block) => any) => void;
 };
@@ -35,19 +39,17 @@ function createWallet(crypto: Crypto, keys: KeySet): Wallet {
 
     async getBalance(symbol: AssetSymbol) {
       const accountChain = await getBlockchain(keys);
-      const loader = await createLoader(crypto, keys, accountChain);
 
-      return calcBalance(crypto, accountChain, keys, loader, symbol);
+      return calcBalance(crypto, accountChain, keys, symbol);
     },
 
     async transfer(address: string, symbol: AssetSymbol, amount: string) {
       const accountChain = await getBlockchain(keys);
-      const loader = await createLoader(crypto, keys, accountChain);
-      const sendTx = await send(crypto, keys, accountChain, amount, address, symbol, loader);
+      const sendTx = await send(crypto, keys, accountChain, amount, address, symbol);
 
       if (!sendTx) return;
 
-      await Promise.all(sendTx.map(async (update) => postTransaction(update.tx)));
+      return postTransaction(sendTx.tx);
     },
 
     onTransfer(handler: (block: Block) => any) {
