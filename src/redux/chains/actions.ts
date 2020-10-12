@@ -32,7 +32,7 @@ export function loadAccountChain() {
         const chain = await fetchBlockchain(keys.sig.publicKey);
         return dispatch(updateChain(chain));
       } catch (err) {
-        if (err instanceof BlockchainNotFoundError) {
+        if (err.name === BlockchainNotFoundError.errorName) {
           dispatch(addLoggedError(err));
         } else {
           // @todo - we must find a way to handle generic errors as well
@@ -111,7 +111,7 @@ export function reloadIndexedChains() {
         const chain = await fetchBlockchain(publicSig);
         dispatch(updateChain(chain));
       } catch (err) {
-        if (err instanceof BlockchainNotFoundError) {
+        if (err.name === BlockchainNotFoundError.errorName) {
           dispatch(addLoggedError(err));
         } else {
           // @todo - we must find a way to handle generic errors as well
