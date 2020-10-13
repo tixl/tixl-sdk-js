@@ -26,7 +26,7 @@ export async function createAssetBlock(
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.ASSET;
-  block.refAsset = symbol;
+  block.symbol = symbol;
   block.createdAt = new Date().getTime();
 
   if (payload) {
