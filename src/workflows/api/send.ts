@@ -24,6 +24,7 @@ export async function createSendBlock(
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.SEND;
+  block.symbol = symbol;
   block.createdAt = new Date().getTime();
   block.refBlock = address;
 

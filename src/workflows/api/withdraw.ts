@@ -24,6 +24,7 @@ export async function createWithdrawalBlock(
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.WITHDRAWAL;
+  block.symbol = symbol;
   block.createdAt = new Date().getTime();
   block.refAsset = externalAddress;
 

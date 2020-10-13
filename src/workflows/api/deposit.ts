@@ -25,6 +25,7 @@ export async function createDepositBlock(
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.DEPOSIT;
+  block.symbol = symbol;
   block.createdAt = new Date().getTime();
   block.claimSignature = claimSignature;
   block.refAsset = externalAddress;

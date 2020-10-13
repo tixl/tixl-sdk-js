@@ -24,6 +24,7 @@ export async function createReceiveBlock(
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.RECEIVE;
+  block.symbol = symbol;
   block.createdAt = new Date().getTime();
   block.refBlock = send.signature;
 

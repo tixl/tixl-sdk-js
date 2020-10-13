@@ -54,7 +54,11 @@ export async function assetTx(
   symbol: AssetSymbol,
 ): Promise<BlockchainTx> {
   const accountChainCopy = workingCopy(accountchain);
-  const leaf = accountChainCopy.leafAsset(symbol);
+  const leafAsset = accountChainCopy.leafAsset(symbol);
+
+  if (leafAsset) throw 'accountchain already has asset block';
+
+  const leaf = accountChainCopy.leaf();
 
   if (!leaf) throw 'accountchain has no leaf block';
 
