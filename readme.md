@@ -5,6 +5,10 @@ The SDK provides builds for different environments:
 1. Node.js
 2. Web Worker (Browser)
 
+## ⚠️ Disclaimer
+
+This SDK does currently have some private repositories as dependencies. These dependencies will be released open source in the short-term. There is a refactoring currently happening on the branch [feature/optional-privacy](https://github.com/tixl/tixl-sdk-js/tree/feature/optional-privacy) and we recommend to start using this SDK as soon as the refactoring is completed.
+
 ## Repository structure
 
 `web-worker/` folder contains a webpack based build to run in a browser environment. It can be built with `yarn build:worker`.
