@@ -23,6 +23,7 @@ export async function createOpeningBlock(
   const block = new Block();
   block.type = BlockType.OPENING;
   block.createdAt = new Date().getTime();
+  block.symbol = symbol;
 
   if (payload) {
     block.payload = payload;

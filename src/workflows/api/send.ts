@@ -26,7 +26,7 @@ export async function createSendBlock(
   block.type = BlockType.SEND;
   block.symbol = symbol;
   block.createdAt = new Date().getTime();
-  block.refBlock = address;
+  block.refAddress = address;
 
   await blockFields(block, { prev, amount, balance });
 
