@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Blockchain, Crypto, KeySet, AssetSymbol, Transaction } from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, AssetSymbol, Transaction, Block } from '@tixl/tixl-types';
 
 import { createDepositBlock } from './api/deposit';
 import { workingCopy } from './utils';
@@ -23,22 +23,22 @@ export async function depositTx(
   crypto: Crypto,
   keySet: KeySet,
   blockchain: Blockchain,
+  prev: Block,
   amount: string | number | bigint,
   extAddress: string,
   symbol: AssetSymbol,
   claimSignature?: string,
 ) {
   const blockchainCopy = workingCopy(blockchain);
-  const leaf = workingCopy(blockchainCopy.leaf());
 
-  if (!leaf) throw 'no leaf for chain found';
+  if (!prev) throw 'no leaf for chain found';
 
-  const newBalance = JSBI.add(JSBI.BigInt(leaf.senderBalance), JSBI.BigInt(amount.toString()));
+  const newBalance = JSBI.add(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(amount.toString()));
   console.log('deposit new balance', newBalance);
 
   const deposit2wallet = await createDepositBlock(
     crypto,
-    leaf,
+    prev,
     blockchainCopy.publicSig,
     extAddress,
     amount,
@@ -84,9 +84,18 @@ export async function deposit(
 
     if (!assetLeaf) throw 'cannot add asset block';
 
-    deposit = await depositTx(crypto, acKeySet, create.blockchain, amount, extAddress, symbol, claimSignature);
+    deposit = await depositTx(
+      crypto,
+      acKeySet,
+      create.blockchain,
+      assetLeaf,
+      amount,
+      extAddress,
+      symbol,
+      claimSignature,
+    );
   } else {
-    deposit = await depositTx(crypto, acKeySet, accountChainCopy, amount, extAddress, symbol, claimSignature);
+    deposit = await depositTx(crypto, acKeySet, accountChainCopy, leaf, amount, extAddress, symbol, claimSignature);
   }
 
   return {

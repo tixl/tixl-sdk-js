@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx } from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx, Block } from '@tixl/tixl-types';
 
 import { createWithdrawalBlock } from './api/withdraw';
 import { searchFunds } from './api/funds';
@@ -9,12 +9,12 @@ export async function withdrawTx(
   crypto: Crypto,
   keySet: KeySet,
   blockchain: Blockchain,
+  prev: Block,
   amount: string | number | bigint,
   extAddress: string,
   symbol: AssetSymbol,
 ) {
   const blockchainCopy = workingCopy(blockchain);
-  const prev = workingCopy(blockchainCopy.leaf());
 
   if (!prev) throw 'no leaf for chain found';
 
@@ -49,9 +49,9 @@ export async function withdraw(
   address: string,
   symbol: AssetSymbol,
 ): Promise<BlockchainTx | false> {
-  const funds = await searchFunds(accountChain, amount, symbol);
+  const assetBranch = await searchFunds(accountChain, amount, symbol);
 
-  if (!funds) return false;
+  if (!assetBranch) return false;
 
-  return withdrawTx(crypto, keySet, accountChain, amount, address, symbol);
+  return withdrawTx(crypto, keySet, accountChain, assetBranch.prev, assetBranch.amount, address, symbol);
 }
