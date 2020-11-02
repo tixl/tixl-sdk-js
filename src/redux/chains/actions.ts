@@ -1,4 +1,4 @@
-import { AssetSymbol, Blockchain, Signature, fromBlockchainObject, Transaction, BlockchainTx } from '@tixl/tixl-types';
+import { Blockchain, Signature, fromBlockchainObject, Transaction, BlockchainTx } from '@tixl/tixl-types';
 import flatMap from 'lodash/flatMap';
 
 import { RootState, ThunkDispatch } from '..';
@@ -11,7 +11,7 @@ import {
 } from './actionKeys';
 import fetchBlockchain, { BlockchainNotFoundError, getBlockchain } from '../../requests/getBlockchain';
 import { postTransaction } from '../../requests/postTransaction';
-import { getAccountChain, getChain } from './selectors';
+import { getChain } from './selectors';
 import { BlockState, BlockWithAdditionalInfo } from './types';
 import { mergeChains } from './utils';
 import { getKeys } from '../keys/selectors';

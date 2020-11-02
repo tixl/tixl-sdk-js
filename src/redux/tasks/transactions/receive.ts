@@ -13,12 +13,7 @@ import { postTransactions } from '../../../requests/postTransaction';
 import { ReceiveTaskData } from '../actionTypes';
 import { ReceiveChanges } from '../../../workflows/receive';
 
-export async function handleReceiveTask(
-  dispatch: ThunkDispatch,
-  state: RootState,
-  task: ReceiveTaskData,
-  keySet: KeySet,
-) {
+export async function handleReceiveTask(dispatch: ThunkDispatch, state: RootState, task: ReceiveTaskData) {
   console.log('receive', { task });
 
   // check if send signature is already in the blockchain store
@@ -77,8 +72,6 @@ export function createReceiveTransaction(send: Block, assetSymbol: AssetSymbol) 
     dispatch(signalReceive());
 
     const state = getState();
-    const { signatureToChain } = state.chains;
-    const loader = signatureToChain;
 
     const accountChain = fromBlockchainObject(getAccountChain(state));
     const keySet = getKeys(state);
