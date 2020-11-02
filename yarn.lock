@@ -9,10 +9,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@tixl/tixl-types@0.6.10-feature-op":
-  version "0.6.10-feature-op"
-  resolved "https://npm.pkg.github.com/download/@tixl/tixl-types/0.6.10-feature-op/aa27d287c9c2e8135b19119b5af8dbec0113e23b8c3070a83ab198f5beee2026#f74ff70196560aa537104611a02c02f3cd17cd86"
-  integrity sha512-yqsJ/SlSMyc9d29Bu3JETHUj7L9IpWEuc4TScBykn5hG8apvNforn4jmawbIJ22dLcAtOjRXsCWXF4ou+vXOWw==
+"@tixl/tixl-types@0.6.11":
+  version "0.6.11"
+  resolved "https://npm.pkg.github.com/download/@tixl/tixl-types/0.6.11/e17dd09f23da72157eca87cd809b8ae3a4ddf240e1877e51f245f35e2b71d55f#259c73a054446bf171c6cdcaa3a8b349e9b92d67"
+  integrity sha512-l/b33nH25R2a9VaZhf8lcb5o3Xzw5Frtzt9/o0jpY6iAlyi516xCIP6VCU7yHEkwXoncrBVsVOE+bK/CSln0ug==
   dependencies:
     jsbi "3.1.4"
 
