@@ -1,9 +1,15 @@
 import JSBI from 'jsbi';
-import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx, Block } from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx, Block, Transaction } from '@tixl/tixl-types';
 
 import { createWithdrawalBlock } from './api/withdraw';
 import { searchFunds } from './api/funds';
 import { workingCopy } from './utils';
+
+export type WithdrawTx = {
+  blockchain: Blockchain;
+  tx: Transaction;
+  withdrawBlock: Block;
+};
 
 export async function withdrawTx(
   crypto: Crypto,
@@ -37,7 +43,7 @@ export async function withdrawTx(
   return {
     blockchain: blockchainCopy,
     tx: withdrawFromwallet.tx,
-    receiveBlock: withdrawFromwallet.block,
+    withdrawBlock: withdrawFromwallet.block,
   };
 }
 
@@ -48,7 +54,7 @@ export async function withdraw(
   amount: string | number | bigint,
   address: string,
   symbol: AssetSymbol,
-): Promise<BlockchainTx | false> {
+): Promise<WithdrawTx | false> {
   const assetBranch = await searchFunds(accountChain, amount, symbol);
 
   if (!assetBranch) return false;

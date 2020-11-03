@@ -1,4 +1,4 @@
-import { BlockchainTx, AssetSymbol, Signature } from '@tixl/tixl-types';
+import { AssetSymbol, Signature } from '@tixl/tixl-types';
 
 import { ThunkDispatch, RootState } from '../..';
 import { signalWithdraw, progressTask, waitNetwork } from '../actions';
@@ -7,6 +7,7 @@ import { runOnWorker } from '../../../helpers/worker';
 import { updateChain } from '../../chains/actions';
 import { postTransaction } from '../../../requests/postTransaction';
 import { WithdrawTaskData } from '../actionTypes';
+import { WithdrawTx } from '../../../workflows/withdraw';
 
 export async function handleWithdrawTask(dispatch: ThunkDispatch, task: WithdrawTaskData) {
   console.log('withdraw', { task });
@@ -26,10 +27,8 @@ export const createWithdrawBlock = (amount: string, btcAddress: string) => {
 
     const state = getState();
     const accountChain = getAccountChain(state);
-    const { signatureToChain } = state.chains;
-    const loader = signatureToChain;
 
-    const withdrawResult = await runOnWorker<BlockchainTx[]>(
+    const withdrawResult = await runOnWorker<WithdrawTx | false>(
       'withdraw',
       state.keys,
       accountChain,
@@ -40,18 +39,13 @@ export const createWithdrawBlock = (amount: string, btcAddress: string) => {
 
     if (!withdrawResult) return;
 
-    if (withdrawResult.length > 0) {
-      for (let singleWithdrawResult of withdrawResult) {
-        dispatch(updateChain(singleWithdrawResult.blockchain));
+    if (withdrawResult) {
+      dispatch(updateChain(withdrawResult.blockchain));
 
-        await postTransaction(singleWithdrawResult.tx);
-      }
+      await postTransaction(withdrawResult.tx);
     }
 
     // collect new block signatures and wait for network result
-    const signatures: Signature[] = [];
-    withdrawResult.forEach((upd) => upd.tx.blocks.forEach((block) => signatures.push(block.signature)));
-
-    return signatures;
+    return [withdrawResult.withdrawBlock.signature];
   };
 };
