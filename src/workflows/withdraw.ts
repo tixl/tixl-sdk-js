@@ -1,25 +1,28 @@
 import JSBI from 'jsbi';
-import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx } from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx, Block, Transaction } from '@tixl/tixl-types';
 
-import { decryptSender } from './api/encryption';
 import { createWithdrawalBlock } from './api/withdraw';
 import { searchFunds } from './api/funds';
-import { workingCopy, BlockchainIndex } from './utils';
+import { workingCopy } from './utils';
+
+export type WithdrawTx = {
+  blockchain: Blockchain;
+  tx: Transaction;
+  withdrawBlock: Block;
+};
 
 export async function withdrawTx(
   crypto: Crypto,
   keySet: KeySet,
   blockchain: Blockchain,
+  prev: Block,
   amount: string | number | bigint,
   extAddress: string,
   symbol: AssetSymbol,
 ) {
   const blockchainCopy = workingCopy(blockchain);
-  const prev = workingCopy(blockchainCopy.leaf());
 
   if (!prev) throw 'no leaf for chain found';
-
-  await decryptSender(crypto, prev, keySet.aes);
 
   const newBalance = JSBI.subtract(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(amount.toString()));
   console.log('withdrawal new balance', newBalance);
@@ -33,7 +36,6 @@ export async function withdrawTx(
     newBalance.toString(),
     symbol,
     keySet.sig.privateKey,
-    keySet.aes,
   );
 
   blockchainCopy.addBlock(withdrawFromwallet.block);
@@ -41,7 +43,7 @@ export async function withdrawTx(
   return {
     blockchain: blockchainCopy,
     tx: withdrawFromwallet.tx,
-    receiveBlock: withdrawFromwallet.block,
+    withdrawBlock: withdrawFromwallet.block,
   };
 }
 
@@ -52,17 +54,10 @@ export async function withdraw(
   amount: string | number | bigint,
   address: string,
   symbol: AssetSymbol,
-  loader: BlockchainIndex,
-): Promise<BlockchainTx[] | false> {
-  // gather list of stealthchains with sufficient amounts
-  const stealthchains = await searchFunds(crypto, accountChain, keySet, amount, symbol, loader);
+): Promise<WithdrawTx | false> {
+  const assetBranch = await searchFunds(accountChain, amount, symbol);
 
-  if (!stealthchains) return false;
+  if (!assetBranch) return false;
 
-  // create withdraw blocks on all these stealthchains
-  return Promise.all(
-    stealthchains.map(async (fund) => {
-      return withdrawTx(crypto, fund.keySet, fund.stealthChain, fund.amount, address, symbol);
-    }),
-  );
+  return withdrawTx(crypto, keySet, accountChain, assetBranch.prev, assetBranch.amount, address, symbol);
 }

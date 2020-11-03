@@ -1,14 +1,14 @@
-import { AssetSymbol, BlockchainTx, Block, Signature } from '@tixl/tixl-types';
+import { AssetSymbol, Signature } from '@tixl/tixl-types';
 
 import { ThunkDispatch, RootState } from '../..';
 import { SendTaskData } from '../actionTypes';
 import { progressTask, waitNetwork, signalSend } from '../actions';
 import { getKeys } from '../../keys/selectors';
 import { getAccountChain } from '../../chains/selectors';
-import getNtruPublicKey from '../../../requests/getNtruPublicKey';
 import { runOnWorker } from '../../../helpers/worker';
 import { postTransaction } from '../../../requests/postTransaction';
 import { updateChain } from '../../chains/actions';
+import { SendTx } from '../../../workflows/send';
 
 export async function handleSendTask(dispatch: ThunkDispatch, task: SendTaskData) {
   console.log('send', { task });
@@ -34,61 +34,47 @@ export function createSendTransaction(address: string, amount: string, symbol: A
     const state = getState();
     const keys = getKeys(state);
     const accountChain = getAccountChain(state);
-    const ntruPublicKey = await getNtruPublicKey(address);
-    const { signatureToChain } = state.chains;
-    const loader = signatureToChain;
 
-    // check if the required data from redux is available
-    if (!ntruPublicKey) return;
     if (!keys || !accountChain) return;
 
     // check if the user has enough funds to avoid sending a block to backend before
     // TODO add feature back if (JSBI.GT(amount, walletBalance)) return;
 
-    const sendUpdate = await runOnWorker<BlockchainTx[] | undefined>(
+    const sendUpdate = await runOnWorker<SendTx | false>(
       'send',
       keys,
       accountChain,
       amount.toString(),
-      ntruPublicKey,
+      address,
       symbol,
-      loader,
     );
 
     if (!sendUpdate) return;
 
     try {
-      await Promise.all(
-        sendUpdate.map(async (update) => {
-          // TODO re-implement
-          // const sendInvalid = shouldSendNextTxInvalid(state);
-          // if (sendInvalid) {
-          //   update.tx.blocks.forEach((block: Block) => {
-          //     block.prev = 'invalid';
-          //   });
-          // await dispatch(sendNextTxInvalid(false));
-          // }
+      await postTransaction(sendUpdate.tx);
 
-          const txResponse = await postTransaction(update.tx);
-
-          // TODO re implement modal via redux event
-          // if (txResponse === GatewayErrors.RATE_LIMIT) {
-          //   dispatch(showModal(ModalContentType.RATE_LIMIT_MODAL));
-          //   throw new Error('Gateway rate limit');
-          // }
-
-          dispatch(updateChain(update.blockchain));
-        }),
-      );
+      dispatch(updateChain(sendUpdate.blockchain));
     } catch (err) {
       console.error(err);
       return;
     }
+    // TODO re-implement
+    // const sendInvalid = shouldSendNextTxInvalid(state);
+    // if (sendInvalid) {
+    //   update.tx.blocks.forEach((block: Block) => {
+    //     block.prev = 'invalid';
+    //   });
+    // await dispatch(sendNextTxInvalid(false));
+    // }
+
+    // TODO re implement modal via redux event
+    // if (txResponse === GatewayErrors.RATE_LIMIT) {
+    //   dispatch(showModal(ModalContentType.RATE_LIMIT_MODAL));
+    //   throw new Error('Gateway rate limit');
+    // }
 
     // collect new block signatures to wait for network result
-    const signatures: Signature[] = [];
-    sendUpdate.forEach((upd) => upd.tx.blocks.forEach((block) => signatures.push(block.signature)));
-
-    return signatures;
+    return [sendUpdate.sendBlock.signature];
   };
 }

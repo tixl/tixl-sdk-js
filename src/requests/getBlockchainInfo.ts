@@ -11,12 +11,12 @@ export interface BlockchainInfo {
 export const getBlockchainInfo = (signature: Signature): Promise<BlockchainInfo | undefined> =>
   axios
     .get(process.env.REACT_APP_GATEWAY + '/blockchaininfo?' + buildQueryString({ signature }))
-    .then(res => {
+    .then((res) => {
       if (!res.data || !res.data.info) return;
 
       return res.data.info;
     })
-    .catch(err => {
+    .catch((err) => {
       if (!err.response) {
         console.error('gateway is unresponsive');
       } else if (err.response.status !== 404) {

@@ -13,23 +13,15 @@ import {
   keySetSeeded,
   calcBalance,
   getPublicSig,
-  decryptPayload,
-  decryptSender,
   scanAllUnspentBlocks,
-  decryptReceiverAmount,
-  decryptReceiver,
   deposit,
   withdraw,
-  appendStealthChain,
   createAccountChain,
   receive,
   send,
 } from '../../src/workflows';
-import createCrypto from './crypto';
 
-importScripts('/ntru.js');
-importScripts('/libsecp256k1.js');
-importScripts('/secp256k1.js');
+import createCrypto from './crypto';
 
 // restore object class methods e.g. leaf() or blocks()
 // objects get serialized and lose their class methods...
@@ -81,29 +73,14 @@ onmessage = function (event: EventData) {
       case 'getPublicSig':
         res = await getPublicSig.apply(self, params);
         break;
-      case 'decryptPayload':
-        res = await decryptPayload.apply(self, params);
-        break;
-      case 'decryptSender':
-        res = await decryptSender.apply(self, params);
-        break;
       case 'scanAllUnspentBlocks':
         res = await scanAllUnspentBlocks.apply(self, params);
-        break;
-      case 'decryptReceiverAmount':
-        res = await decryptReceiverAmount.apply(self, params);
-        break;
-      case 'decryptReceiver':
-        res = await decryptReceiver.apply(self, params);
         break;
       case 'deposit':
         res = await deposit.apply(self, params);
         break;
       case 'withdraw':
         res = await withdraw.apply(self, params);
-        break;
-      case 'appendStealthChain':
-        res = await appendStealthChain.apply(self, params);
         break;
       case 'createAccountChain':
         res = await createAccountChain.apply(self, params);

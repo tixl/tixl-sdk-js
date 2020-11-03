@@ -1,10 +1,5 @@
 import axios from 'axios';
-import { Block } from '@tixl/tixl-types';
+import { Block, SigPublicKey } from '@tixl/tixl-types';
 
-export const getUnspent = async (
-  fromTimestamp: number,
-  toTimestamp: number,
-): Promise<{ blocks: Block[]; earliest: number | null; latest: number | null }> =>
-  axios
-    .get(process.env.REACT_APP_GATEWAY + `/unspent?fromTimestamp=${fromTimestamp}&toTimestamp=${toTimestamp}`)
-    .then(res => res.data);
+export const getUnspent = async (signature: SigPublicKey): Promise<{ blocks: Block[] }> =>
+  axios.get(process.env.REACT_APP_GATEWAY + `/unspent?signature=${signature}`).then((res) => res.data);

@@ -1,7 +1,5 @@
 import {
-  AESPrivateKey,
   SigPrivateKey,
-  NTRUPublicKey,
   Crypto,
   Block,
   BlockType,
@@ -12,33 +10,25 @@ import {
 } from '@tixl/tixl-types';
 
 import { blockFields } from './open';
-import { encryptReceiver, encryptSender } from './encryption';
 import { signBlock } from './signatures';
 
 export async function createSendBlock(
-  crypto: Crypto,
+  _crypto: Crypto,
   prev: Block,
   publicSig: SigPublicKey,
   amount: string | number | bigint,
   balance: string | number | bigint,
+  address: SigPublicKey,
   symbol: AssetSymbol,
   signatureKey?: SigPrivateKey,
-  receiverKey?: NTRUPublicKey,
-  aesKey?: AESPrivateKey,
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.SEND;
+  block.symbol = symbol;
   block.createdAt = new Date().getTime();
+  block.refAddress = address;
 
-  await blockFields(crypto, block, { prev, amount, balance });
-
-  if (receiverKey) {
-    await encryptReceiver(crypto, block, receiverKey);
-  }
-
-  if (aesKey) {
-    await encryptSender(crypto, block, aesKey);
-  }
+  await blockFields(block, { prev, amount, balance });
 
   if (signatureKey) {
     signBlock(block, signatureKey);

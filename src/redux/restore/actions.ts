@@ -38,32 +38,9 @@ export const restoreOrSetup = (mnemonicSeed: Uint8Array, setError: (err: string)
       }
 
       if (accountChain) {
-        // decrypt opening block and read full keyset
-        const opening = { ...accountChain.openingBlock() } as Block;
-        const decryptedOpening = await runOnWorker<Block>('decryptPayload', opening, keys.aes);
-
-        if (!decryptedOpening) return;
-
-        const keySet = JSON.parse(decryptedOpening.payload);
-
-        // decrypt opening blocks and refetch stealthchains
-        await Promise.all(
-          accountChain.blocks.map(async (block) => {
-            if (block.type !== BlockType.OPENING || !block.prev) return;
-
-            const blockCopy = { ...block } as Block;
-            const decryptedBlock = await runOnWorker<Block>('decryptPayload', blockCopy, keys.aes);
-
-            if (!decryptedBlock) return;
-
-            const stealtchChainKeys = JSON.parse(decryptedBlock.payload) as KeySet;
-            const stealthChain = await fetchBlockchain(stealtchChainKeys.sig.publicKey);
-
-            if (stealthChain) {
-              dispatch(updateChain(stealthChain, 'accepted'));
-            }
-          }),
-        );
+        const keySet: KeySet = {
+          sig: keys.sig,
+        };
 
         dispatch({
           type: RESTORE_KEYS_SUCCESS,

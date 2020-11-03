@@ -1,19 +1,9 @@
 import JSBI from 'jsbi';
-import {
-  Blockchain,
-  Crypto,
-  KeySet,
-  Block,
-  AssetSymbol,
-  BlockchainTx,
-  NTRUPublicKey,
-  Transaction,
-} from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, Block, AssetSymbol, Transaction, SigPublicKey } from '@tixl/tixl-types';
 
 import { createSendBlock } from './api/send';
-import { decryptSender } from './api/encryption';
 import { searchFunds } from './api/funds';
-import { workingCopy, BlockchainIndex } from './utils';
+import { workingCopy } from './utils';
 
 export type SendTx = {
   blockchain: Blockchain;
@@ -25,29 +15,27 @@ export async function sendTx(
   crypto: Crypto,
   keySet: KeySet,
   blockchain: Blockchain,
+  prev: Block,
   amount: string | number | bigint,
-  address: NTRUPublicKey,
+  address: SigPublicKey,
   symbol: AssetSymbol,
 ): Promise<SendTx> {
   const blockchainCopy = workingCopy(blockchain);
-  const prev = workingCopy(blockchainCopy.leaf());
 
   if (!prev) throw 'no prev for chain found';
 
-  await decryptSender(crypto, prev, keySet.aes);
-
-  const newBalance = JSBI.subtract(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(amount.toString()));
+  const prevCopy = workingCopy(prev);
+  const newBalance = JSBI.subtract(JSBI.BigInt(prevCopy.senderBalance), JSBI.BigInt(amount.toString()));
 
   const send2wallet = await createSendBlock(
     crypto,
-    prev,
+    prevCopy,
     blockchainCopy.publicSig,
     amount,
     newBalance.toString(),
+    address,
     symbol,
     keySet.sig.privateKey,
-    address,
-    keySet.aes,
   );
 
   blockchainCopy.addBlock(send2wallet.block);
@@ -64,19 +52,12 @@ export async function send(
   keySet: KeySet,
   accountChain: Blockchain,
   amount: string | number | bigint,
-  address: NTRUPublicKey,
+  address: SigPublicKey,
   symbol: AssetSymbol,
-  loader: BlockchainIndex,
-): Promise<BlockchainTx[] | false> {
-  // gather list of stealthchains with sufficient amounts
-  const stealthchains = await searchFunds(crypto, accountChain, keySet, amount, symbol, loader);
+): Promise<SendTx | false> {
+  const assetBranch = await searchFunds(accountChain, amount, symbol);
 
-  if (!stealthchains) return false;
+  if (!assetBranch) return false;
 
-  // create send blocks on all these stealthchains
-  return Promise.all(
-    stealthchains.map(async (fund) => {
-      return sendTx(crypto, fund.keySet, fund.stealthChain, fund.amount, address, symbol);
-    }),
-  );
+  return sendTx(crypto, keySet, accountChain, assetBranch.prev, assetBranch.amount, address, symbol);
 }

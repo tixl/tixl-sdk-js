@@ -134,9 +134,9 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
       return {
         ...state,
         send: state.send.concat({
-          id: Math.random(),
-          createdAt: new Date().getTime(),
           ...action.task,
+          id: Math.random().toString(),
+          createdAt: new Date().getTime(),
         }),
       };
 
@@ -144,9 +144,9 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
       return {
         ...state,
         receive: state.receive.concat({
-          id: Math.random(),
-          createdAt: new Date().getTime(),
           ...action.task,
+          id: Math.random().toString(),
+          createdAt: new Date().getTime(),
         }),
       };
 
@@ -154,9 +154,9 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
       return {
         ...state,
         withdraw: state.withdraw.concat({
-          id: Math.random(),
-          createdAt: new Date().getTime(),
           ...action.task,
+          id: Math.random().toString(),
+          createdAt: new Date().getTime(),
         }),
       };
 
@@ -164,9 +164,9 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
       return {
         ...state,
         deposit: state.deposit.concat({
-          id: Math.random(),
-          createdAt: new Date().getTime(),
           ...action.task,
+          id: Math.random().toString(),
+          createdAt: new Date().getTime(),
         }),
       };
 
