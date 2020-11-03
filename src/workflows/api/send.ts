@@ -20,21 +20,22 @@ export async function createSendBlock(
   balance: string | number | bigint,
   address: SigPublicKey,
   symbol: AssetSymbol,
-  signatureKey?: SigPrivateKey,
+  signatureKey: SigPrivateKey,
+  payload?: string,
 ): Promise<BlockTx> {
   const block = new Block();
   block.type = BlockType.SEND;
   block.symbol = symbol;
   block.createdAt = new Date().getTime();
   block.refAddress = address;
+  block.payload = payload;
 
   await blockFields(block, { prev, amount, balance });
 
-  if (signatureKey) {
-    signBlock(block, signatureKey);
-  }
+  signBlock(block, signatureKey);
 
   const tx = new Transaction();
+
   tx.blocks = [block];
   tx.publicSig = publicSig;
   tx.assetSymbol = symbol;

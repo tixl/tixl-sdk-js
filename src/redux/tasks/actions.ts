@@ -42,13 +42,14 @@ export function createReceiveTask(sendSignature: Signature, sendHash?: string, s
   };
 }
 
-export function createSendTask(amount: string, address: string, symbol: AssetSymbol) {
+export function createSendTask(amount: string, address: string, symbol: AssetSymbol, payload?: string) {
   return {
     type: CREATE_SEND_TASK,
     task: {
       amount,
       address,
       symbol,
+      payload,
     },
   };
 }

@@ -19,6 +19,7 @@ export async function sendTx(
   amount: string | number | bigint,
   address: SigPublicKey,
   symbol: AssetSymbol,
+  payload?: string,
 ): Promise<SendTx> {
   const blockchainCopy = workingCopy(blockchain);
 
@@ -36,6 +37,7 @@ export async function sendTx(
     address,
     symbol,
     keySet.sig.privateKey,
+    payload,
   );
 
   blockchainCopy.addBlock(send2wallet.block);
@@ -54,10 +56,11 @@ export async function send(
   amount: string | number | bigint,
   address: SigPublicKey,
   symbol: AssetSymbol,
+  payload?: string,
 ): Promise<SendTx | false> {
   const assetBranch = await searchFunds(accountChain, amount, symbol);
 
   if (!assetBranch) return false;
 
-  return sendTx(crypto, keySet, accountChain, assetBranch.prev, assetBranch.amount, address, symbol);
+  return sendTx(crypto, keySet, accountChain, assetBranch.prev, assetBranch.amount, address, symbol, payload);
 }

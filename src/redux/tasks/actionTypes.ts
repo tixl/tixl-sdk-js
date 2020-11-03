@@ -41,6 +41,7 @@ export type SendTaskData = TaskData & {
   amount: string;
   address: string;
   symbol: AssetSymbol;
+  payload?: string;
 };
 
 export type ReceiveTaskData = TaskData & {

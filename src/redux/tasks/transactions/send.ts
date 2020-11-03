@@ -15,7 +15,7 @@ export async function handleSendTask(dispatch: ThunkDispatch, task: SendTaskData
 
   await dispatch(progressTask(task));
 
-  const signatures = await dispatch(createSendTransaction(task.address, task.amount, task.symbol));
+  const signatures = await dispatch(createSendTransaction(task.address, task.amount, task.symbol, task.payload));
 
   if (signatures) {
     dispatch(waitNetwork(task, signatures));
@@ -26,7 +26,7 @@ export async function handleSendTask(dispatch: ThunkDispatch, task: SendTaskData
  * @param address The public Tixl address of the receiver
  * @param amount The amount as a string. Always pass integer amounts as strings. 235 TXL or 1245789 Satoshis (no floats!)
  */
-export function createSendTransaction(address: string, amount: string, symbol: AssetSymbol) {
+export function createSendTransaction(address: string, amount: string, symbol: AssetSymbol, payload?: string) {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     // for logging and debugging purposes
     dispatch(signalSend());
@@ -47,6 +47,7 @@ export function createSendTransaction(address: string, amount: string, symbol: A
       amount.toString(),
       address,
       symbol,
+      payload,
     );
 
     if (!sendUpdate) return;
