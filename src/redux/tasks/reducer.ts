@@ -108,6 +108,22 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
         ...state,
         inProgress: state.inProgress.filter((task) => task.id !== action.id),
         networkApprovals: state.networkApprovals.filter((task) => task.id !== action.id),
+        send: state.send.map((send) => {
+          if (send.id === action.id) return { ...send, skipCounter: send.skipCounter + 1 };
+          return send;
+        }),
+        receive: state.receive.map((receive) => {
+          if (receive.id === action.id) return { ...receive, skipCounter: receive.skipCounter + 1 };
+          return receive;
+        }),
+        withdraw: state.withdraw.map((withdraw) => {
+          if (withdraw.id === action.id) return { ...withdraw, skipCounter: withdraw.skipCounter + 1 };
+          return withdraw;
+        }),
+        deposit: state.deposit.map((deposit) => {
+          if (deposit.id === action.id) return { ...deposit, skipCounter: deposit.skipCounter + 1 };
+          return deposit;
+        }),
       };
 
     case PROGRESS_TASK:
@@ -116,6 +132,7 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
         inProgress: state.inProgress.concat({
           createdAt: new Date().getTime(),
           id: action.task.id,
+          skipCounter: action.task.skipCounter,
         }),
       };
 
@@ -137,6 +154,7 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
           ...action.task,
           id: Math.random().toString(),
           createdAt: new Date().getTime(),
+          skipCounter: 0,
         }),
       };
 
@@ -147,6 +165,7 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
           ...action.task,
           id: Math.random().toString(),
           createdAt: new Date().getTime(),
+          skipCounter: 0,
         }),
       };
 
@@ -157,6 +176,7 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
           ...action.task,
           id: Math.random().toString(),
           createdAt: new Date().getTime(),
+          skipCounter: 0,
         }),
       };
 
@@ -167,6 +187,7 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
           ...action.task,
           id: Math.random().toString(),
           createdAt: new Date().getTime(),
+          skipCounter: 0,
         }),
       };
 

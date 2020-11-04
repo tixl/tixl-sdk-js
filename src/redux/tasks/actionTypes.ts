@@ -23,6 +23,7 @@ import { ResetAllDataAction } from '../global/actionTypes';
 export type InProgress = {
   id: string;
   createdAt: number;
+  skipCounter: number;
 };
 
 export type NetworkApproval = {
@@ -35,6 +36,7 @@ export type NetworkApproval = {
 export type TaskData = {
   id: string;
   createdAt: number;
+  skipCounter: number;
 };
 
 export type SendTaskData = TaskData & {
