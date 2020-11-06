@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Blockchain, Crypto, KeySet, AssetSymbol, BlockchainTx, Block, Transaction } from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, AssetSymbol, Block, Transaction } from '@tixl/tixl-types';
 
 import { createWithdrawalBlock } from './api/withdraw';
 import { searchFunds } from './api/funds';
