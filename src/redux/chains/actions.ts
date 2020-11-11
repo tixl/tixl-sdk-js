@@ -110,12 +110,7 @@ export function reloadIndexedChains() {
         const chain = await fetchBlockchain(publicSig);
         dispatch(updateChain(chain));
       } catch (err) {
-        if (err.name === BlockchainNotFoundError.errorName) {
-          dispatch(addLoggedError(err));
-        } else {
-          // @todo - we must find a way to handle generic errors as well
-          throw err;
-        }
+        dispatch(addLoggedError(err));
       }
     });
   };
