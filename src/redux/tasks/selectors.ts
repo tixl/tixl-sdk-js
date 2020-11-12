@@ -1,6 +1,22 @@
-import { Signature } from '@tixl/tixl-types';
+import { Block, Signature, Transaction } from '@tixl/tixl-types';
 
 import { RootState } from '..';
+import { calculateDoublePow } from '../../lib/microPow';
+
+export function setTxProofOfWork(state: RootState, tx: Transaction) {
+  tx.blocks = tx.blocks.map((block) => {
+    const nonce = getBlockNonce(state, block);
+
+    return { ...block, nonce } as Block;
+  });
+}
+
+export function getBlockNonce(state: RootState, block: Block): number[] | undefined {
+  // fallback to signature for blocks without prev, like accountchain open blocks
+  if (!block.prev) return calculateDoublePow(block.signature as string);
+
+  return state.tasks.nonces[block.prev as string];
+}
 
 // returns true if a send task has blocks that are waiting for network approval
 export function sendBlockWaitingForNetwork(state: RootState): boolean {

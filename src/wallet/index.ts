@@ -48,7 +48,6 @@ function createWallet(crypto: Crypto, keys: KeySet): Wallet {
       const sendTx = await send(crypto, keys, accountChain, amount, address, symbol);
 
       if (!sendTx) return;
-
       return postTransaction(sendTx.tx);
     },
 

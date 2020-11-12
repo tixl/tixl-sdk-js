@@ -2,18 +2,33 @@ import sha256 from 'js-sha256';
 
 export type HashPattern = { pos: number; character: string }[];
 
-export function calculatePow(base: string, target: HashPattern, nonce: number = 1) {
+const powTarget = [
+  { pos: 0, character: '0' },
+  { pos: 1, character: '0' },
+  { pos: 2, character: '0' },
+  { pos: 3, character: '0' },
+];
+
+const powTargetAlt = [
+  { pos: 0, character: '1' },
+  { pos: 1, character: '1' },
+  { pos: 2, character: '1' },
+  { pos: 3, character: '1' },
+];
+
+function calculatePow(base: string, target: HashPattern, nonce: number = 1) {
   let hash = '';
+
   while (!matchesHashPattern(target, hash)) {
     nonce++;
     hash = sha256(base + String(nonce));
   }
-  console.log(hash);
+
   return nonce;
 }
 
-export function calculateDoublePow(base: string, target1: HashPattern, target2: HashPattern) {
-  return [calculatePow(base, target1), calculatePow(base, target2)];
+export function calculateDoublePow(base: string) {
+  return [calculatePow(base, powTarget), calculatePow(base, powTargetAlt)];
 }
 
 export function checkPow(base: string, target: HashPattern, nonce: number) {

@@ -20,6 +20,7 @@ import {
   CREATE_WITHDRAW_TASK,
   CREATE_DEPOSIT_TASK,
   ABORT_TASK,
+  UPDATE_NONCES,
 } from './actionKeys';
 import { RESET_ALL_DATA } from '../global/actionKeys';
 
@@ -30,6 +31,7 @@ export interface TasksReduxState {
   receive: ReceiveTaskData[];
   withdraw: WithdrawTaskData[];
   deposit: DepositTaskData[];
+  nonces: Record<string, number[]>;
 }
 
 const initialState: TasksReduxState = {
@@ -39,6 +41,7 @@ const initialState: TasksReduxState = {
   receive: [],
   withdraw: [],
   deposit: [],
+  nonces: {},
 };
 
 export function reducer(state = initialState, action: GeneralAction): TasksReduxState {
@@ -189,6 +192,15 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
           createdAt: new Date().getTime(),
           skipCounter: 0,
         }),
+      };
+
+    case UPDATE_NONCES:
+      return {
+        ...state,
+        nonces: {
+          ...state.nonces,
+          ...action.nonces,
+        },
       };
 
     case RESET_ALL_DATA:

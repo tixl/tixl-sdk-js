@@ -1,14 +1,16 @@
-import { AssetSymbol, Signature, fromBlockObject, Block, KeySet } from '@tixl/tixl-types';
+import { AssetSymbol, Signature, KeySet } from '@tixl/tixl-types';
+import flatMap from 'lodash/flatMap';
 
 import { ThunkDispatch, RootState } from '../..';
 import { DepositChanges } from '../../../workflows/deposit';
 import { getAccountChain } from '../../chains/selectors';
 import { runOnWorker } from '../../../helpers/worker';
 import { updateChain } from '../../chains/actions';
-import { postTransaction } from '../../../requests/postTransaction';
+import { mergePostTransactions } from '../../../requests/postTransaction';
 import { getKeys } from '../../keys/selectors';
 import { DepositTaskData } from '../actionTypes';
-import { progressTask, waitNetwork } from '../actions';
+import { progressTask, updateNonces, waitNetwork } from '../actions';
+import { setTxProofOfWork } from '../selectors';
 
 export async function handleDepositTask(dispatch: ThunkDispatch, task: DepositTaskData) {
   console.log('deposit', { task });
@@ -52,15 +54,25 @@ export const createDepositBlock = (transactionHash: string, value: string, claim
 
     dispatch(updateChain(depositOp.assetDeposit.blockchain));
 
+    // proof of work
+    updates.forEach((update) => {
+      setTxProofOfWork(state, update.tx);
+    });
+
+    const txs = updates.map((update) => update.tx);
+
+    // build one tx and send to gateway
+    await mergePostTransactions(txs);
+
+    //  precalc pow
     await Promise.all(
       updates.map(async (update) => {
-        await postTransaction(update.tx);
+        await dispatch(updateNonces(update.tx));
       }),
     );
 
-    // collect new block signatures and wait for network result
-    const signatures: Signature[] = [];
-    updates.forEach((upd) => upd.tx.blocks.forEach((block) => signatures.push(block.signature)));
+    // collect new block signatures to wait for network result
+    const signatures = flatMap(updates, (update) => update.tx.blocks.map((block) => block.signature));
 
     return signatures;
   };

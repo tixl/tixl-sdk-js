@@ -1,4 +1,4 @@
-import { AssetSymbol, Signature } from '@tixl/tixl-types';
+import { AssetSymbol, Signature, Transaction } from '@tixl/tixl-types';
 
 import {
   CREATE_SEND_TASK,
@@ -16,12 +16,32 @@ import {
   CREATE_WITHDRAW_TRANSACTION,
   CREATE_DEPOSIT_TASK,
   CREATE_WITHDRAW_TASK,
+  UPDATE_NONCES,
 } from './actionKeys';
 import { TaskData } from './actionTypes';
 
 import { sendBlockTask } from './selectors';
 import { TasksReduxState } from './reducer';
 import { ThunkDispatch, RootState } from '..';
+import { calculateDoublePow } from '../../lib/microPow';
+
+export function updateNonces(tx: Transaction) {
+  const nonces: Record<string, number[]> = {};
+
+  tx.blocks.forEach((block) => {
+    console.time('microPow');
+    const nonce = calculateDoublePow(block.signature as string);
+    console.timeEnd('microPow');
+
+    // the next (new) transaction can lookup the POW for a block with its prev signature
+    nonces[block.signature as string] = nonce;
+  });
+
+  return {
+    type: UPDATE_NONCES,
+    nonces,
+  };
+}
 
 export function createReceiveTask(sendSignature: Signature, sendHash?: string, symbol?: AssetSymbol) {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {

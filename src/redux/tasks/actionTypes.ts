@@ -17,6 +17,7 @@ import {
   CREATE_WITHDRAW_TASK,
   CREATE_DEPOSIT_TASK,
   ABORT_TASK,
+  UPDATE_NONCES,
 } from './actionKeys';
 import { ResetAllDataAction } from '../global/actionTypes';
 
@@ -144,7 +145,13 @@ export interface ProgressTaskAction {
   task: SendTaskData | ReceiveTaskData | DepositTaskData | WithdrawTaskData;
 }
 
+export interface UpdateNoncesAction {
+  type: typeof UPDATE_NONCES;
+  nonces: Record<string, number[]>;
+}
+
 export type GeneralAction =
+  | UpdateNoncesAction
   | CreateReceiveTaskAction
   | CreateSendTaskAction
   | CreateWithdrawTaskAction

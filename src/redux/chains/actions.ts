@@ -18,7 +18,8 @@ import { getKeys } from '../keys/selectors';
 import { addLoggedError } from '../errors/actions';
 import { runOnWorker } from '../../helpers/worker';
 import { getBlock } from '../../requests/getBlock';
-import { onNewNetworkResult } from '../tasks/actions';
+import { onNewNetworkResult, updateNonces } from '../tasks/actions';
+import { setTxProofOfWork } from '../tasks/selectors';
 
 // AccountChain related stuff
 export function loadAccountChain() {
@@ -68,7 +69,9 @@ export function createAccountChain() {
         dispatch(updateChain(accountChain));
 
         if (accountChainTx) {
+          setTxProofOfWork(state, accountChainTx);
           await postTransaction(accountChainTx);
+          dispatch(updateNonces(accountChainTx));
         }
       } else {
         throw err;

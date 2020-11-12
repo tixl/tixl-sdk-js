@@ -2,13 +2,14 @@ import { AssetSymbol, Signature } from '@tixl/tixl-types';
 
 import { ThunkDispatch, RootState } from '../..';
 import { SendTaskData } from '../actionTypes';
-import { progressTask, waitNetwork, signalSend } from '../actions';
+import { progressTask, waitNetwork, signalSend, updateNonces } from '../actions';
 import { getKeys } from '../../keys/selectors';
 import { getAccountChain } from '../../chains/selectors';
 import { runOnWorker } from '../../../helpers/worker';
 import { postTransaction } from '../../../requests/postTransaction';
 import { updateChain } from '../../chains/actions';
 import { SendTx } from '../../../workflows/send';
+import { setTxProofOfWork } from '../selectors';
 
 export async function handleSendTask(dispatch: ThunkDispatch, task: SendTaskData) {
   console.log('send', { task });
@@ -52,14 +53,13 @@ export function createSendTransaction(address: string, amount: string, symbol: A
 
     if (!sendUpdate) return;
 
-    try {
-      await postTransaction(sendUpdate.tx);
+    setTxProofOfWork(state, sendUpdate.tx);
 
-      dispatch(updateChain(sendUpdate.blockchain));
-    } catch (err) {
-      console.error(err);
-      return;
-    }
+    await postTransaction(sendUpdate.tx);
+
+    dispatch(updateNonces(sendUpdate.tx));
+    dispatch(updateChain(sendUpdate.blockchain));
+
     // TODO re-implement
     // const sendInvalid = shouldSendNextTxInvalid(state);
     // if (sendInvalid) {
