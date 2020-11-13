@@ -15,7 +15,11 @@ export function getBlockNonce(state: RootState, block: Block): number[] | undefi
   // fallback to signature for blocks without prev, like accountchain open blocks
   if (!block.prev) return calculateDoublePow(block.signature as string);
 
-  return state.tasks.nonces[block.prev as string];
+  // lookup pre calculated nonces
+  if (state.tasks.nonces[block.prev as string]) return state.tasks.nonces[block.prev as string];
+
+  // last resort to calc new nonce
+  return calculateDoublePow(block.prev as string);
 }
 
 // returns true if a send task has blocks that are waiting for network approval
