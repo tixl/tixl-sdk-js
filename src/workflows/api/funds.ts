@@ -20,10 +20,10 @@ export async function searchFunds(
   // no asset branch
   if (!leaf) return false;
 
-  const leafAmount = JSBI.BigInt(leaf.senderAmount);
+  const leafBalance = JSBI.BigInt(leaf.senderBalance);
 
   // insufficient funds
-  if (JSBI.LT(leafAmount, amountToSend)) return false;
+  if (JSBI.LT(leafBalance, amountToSend)) return false;
 
   return {
     prev: leaf,
