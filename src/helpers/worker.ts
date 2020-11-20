@@ -26,7 +26,7 @@ export async function runOnWorker<T>(action: string, ...params: any[]): Promise<
         return reject(err);
       }
 
-      if (!res) {
+      if (res === null) {
         console.error('no result from worker for action', action);
       }
 
