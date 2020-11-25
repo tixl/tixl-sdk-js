@@ -30,12 +30,12 @@ export async function createReceiveBlock(
 
   await blockFields(block, { ref: send, prev, amount, balance });
 
-  if (signatureKey) {
-    signBlock(block, signatureKey);
-  }
-
   if (send.payload) {
     block.payload = send.payload;
+  }
+
+  if (signatureKey) {
+    signBlock(block, signatureKey);
   }
 
   const tx = new Transaction(symbol);
