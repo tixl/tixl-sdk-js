@@ -1,6 +1,6 @@
 {
   "name": "@tixl/tixl-sdk-js",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "dependencies": {
     "@tixl/tixl-ntru": "0.1.11",
     "@tixl/tixl-pedersen-commitments": "2.1.1",
