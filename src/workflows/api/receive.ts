@@ -34,6 +34,10 @@ export async function createReceiveBlock(
     signBlock(block, signatureKey);
   }
 
+  if (send.payload) {
+    block.payload = send.payload;
+  }
+
   const tx = new Transaction(symbol);
   tx.blocks = [block];
   tx.publicSig = publicSig;
