@@ -23,6 +23,8 @@ export async function createSendBlock(
   signatureKey: SigPrivateKey,
   payload?: string,
 ): Promise<BlockTx> {
+  if (payload && payload.length > 128) throw 'send block payload too long';
+
   const block = new Block();
   block.type = BlockType.SEND;
   block.symbol = symbol;
