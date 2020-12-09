@@ -5,10 +5,6 @@ The SDK provides builds for different environments:
 1. Node.js
 2. Web Worker (Browser)
 
-## ⚠️ Disclaimer
-
-This SDK does currently have some private repositories as dependencies. These dependencies will be released open source in the short-term. There is a refactoring currently happening on the branch [feature/optional-privacy](https://github.com/tixl/tixl-sdk-js/tree/feature/optional-privacy) and we recommend to start using this SDK as soon as the refactoring is completed.
-
 ## Repository structure
 
 `web-worker/` folder contains a webpack based build to run in a browser environment. It can be built with `yarn build:worker`.
@@ -30,6 +26,8 @@ Include the SDK in your TypeScript project as usual: `npm install @tixl/tixl-typ
 Setup an env variable for the gateway. Only the test gateway can currently be used: `REACT_APP_GATEWAY=https://gateway.tixl.dev`
 
 ### Crypto Interface
+
+⚠️ The interface is much shorter for the optional-privacy version. But we keep it for now.
 
 All crypto-related functions are platform dependent and need a suiting implementation. The interface for our `crypto` requirements are defined in the [tixl-types](https://github.com/tixl/tixl-types/blob/master/src/Crypto.ts) repository.
 
