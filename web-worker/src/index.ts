@@ -49,6 +49,7 @@ type EventData = { data: string[] };
 onmessage = function (event: EventData) {
   const [id, action, ...paramsIn] = event.data;
 
+  // @ts-ignore
   const self: WorkerGlobalScope = this;
 
   async function run() {

@@ -1,6 +1,6 @@
 import JSBI from 'jsbi';
 
-import { Blockchain, Crypto, BlockType, KeySet, Block, AssetSymbol } from '@tixl/tixl-types';
+import { Blockchain, Crypto, KeySet, Block, AssetSymbol } from '@tixl/tixl-types';
 import { workingCopy } from './utils';
 
 /**
@@ -27,9 +27,9 @@ export async function sumBalance(blocks: Block[]): Promise<string> {
  * @returns the balance
  */
 export async function calcBalance(
-  crypto: Crypto,
+  _crypto: Crypto,
   blockchain: Blockchain,
-  keySet: KeySet,
+  _keySet: KeySet,
   symbol: AssetSymbol,
 ): Promise<string> {
   const blockchainCopy = workingCopy(blockchain);

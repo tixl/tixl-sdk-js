@@ -1,7 +1,7 @@
+import randomBytes from 'randombytes';
 import { Buffer } from 'buffer';
 import base58 from 'bs58';
 import { sha256 } from 'js-sha256';
-import * as Random from 'expo-random';
 import { instantiateSecp256k1, Secp256k1 } from '@bitauth/libauth';
 import { Crypto } from '@tixl/tixl-types';
 
@@ -12,13 +12,11 @@ let secp256k1: Secp256k1;
 })();
 
 /**
- * Creates the crypto environment for React Native w/ Expo.
+ * Creates the crypto environment for the browser.
  */
 export default function createCrypto(): Crypto {
   return {
-    randomBytes(length: number) {
-      return Buffer.from(Random.getRandomBytes(32));
-    },
+    randomBytes,
     sha256(message: string) {
       return sha256(message);
     },
@@ -50,6 +48,3 @@ export default function createCrypto(): Crypto {
     },
   };
 }
-
-// @ts-ignore
-window.tixlcrypto = createCrypto();
