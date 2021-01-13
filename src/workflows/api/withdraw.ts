@@ -13,7 +13,7 @@ import { blockFields } from './open';
 import { signBlock } from './signatures';
 
 export async function createWithdrawalBlock(
-  _crypto: Crypto,
+  crypto: Crypto,
   prev: Block,
   publicSig: SigPublicKey,
   externalAddress: string,
@@ -31,7 +31,7 @@ export async function createWithdrawalBlock(
   await blockFields(block, { prev, amount, balance });
 
   if (signatureKey) {
-    signBlock(block, signatureKey);
+    signBlock(crypto, block, signatureKey);
   }
 
   const tx = new Transaction();

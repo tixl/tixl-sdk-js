@@ -1,6 +1,7 @@
-import crypto from 'crypto';
+import { Buffer } from 'buffer';
 import base58 from 'bs58';
 import { sha256 } from 'js-sha256';
+import * as Random from 'expo-random';
 import { instantiateSecp256k1, Secp256k1 } from '@bitauth/libauth';
 import { Crypto } from '@tixl/tixl-types';
 
@@ -11,12 +12,12 @@ let secp256k1: Secp256k1;
 })();
 
 /**
- * Creates the crypto environment for nodejs.
+ * Creates the crypto environment for the browser.
  */
-export function createCrypto(): Crypto {
+export default function createCrypto(): Crypto {
   return {
-    randomBytes(len: number) {
-      return crypto.randomBytes(len);
+    randomBytes(length: number) {
+      return Buffer.from(Random.getRandomBytes(32));
     },
     sha256(message: string) {
       return sha256(message);

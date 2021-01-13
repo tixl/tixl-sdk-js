@@ -1,43 +1,60 @@
-import secp256k1 from 'secp256k1';
-import bs58 from 'bs58';
-import { sha256 } from 'js-sha256';
 import { Buffer } from 'buffer';
-import { Block, Crypto, SigPrivateKey, SigPublicKey } from '@tixl/tixl-types';
+import { Block, Crypto, SigPrivateKey, SigPublicKey, Signature } from '@tixl/tixl-types';
 
-export function generatePrivateKey(crypto: Crypto) {
+export function generatePrivateKey(crypto: Crypto): Buffer {
   let privateKey;
 
   do {
     privateKey = crypto.randomBytes(32);
-  } while (!secp256k1.privateKeyVerify(privateKey));
+  } while (!crypto.secp256k1.verifyPrivateKey(privateKey));
 
   return privateKey;
 }
 
-export function signatureKeyPair(privateKey: any): { privateKey: SigPrivateKey; publicKey: SigPublicKey } {
-  const publicKey = secp256k1.publicKeyCreate(privateKey);
+export function signatureKeyPair(
+  crypto: Crypto,
+  privateKey: Buffer,
+): { privateKey: SigPrivateKey; publicKey: SigPublicKey } {
+  const publicKey = crypto.secp256k1.createPublicKey(privateKey);
 
   return {
-    privateKey: bs58.encode(privateKey),
-    publicKey: bs58.encode(publicKey),
+    privateKey: crypto.base58.toString(privateKey),
+    publicKey: crypto.base58.toString(publicKey),
   };
 }
 
-export function loadPublicSigKey(privateSigKey: SigPrivateKey): SigPublicKey {
-  const keyDecoded = bs58.decode(privateSigKey as string);
-  const publicKey = secp256k1.publicKeyCreate(keyDecoded);
+export function loadPublicSigKey(crypto: Crypto, privateSigKey: SigPrivateKey): SigPublicKey {
+  const keyDecoded = crypto.base58.toBytes(privateSigKey as string);
+  const publicKey = crypto.secp256k1.createPublicKey(keyDecoded);
 
-  return bs58.encode(publicKey);
+  return crypto.base58.toString(publicKey);
 }
 
-export function signBlock(block: Block, privateKey: SigPrivateKey) {
+function payload(crypto: Crypto, message: string): Buffer {
+  return Buffer.from(crypto.sha256(message), 'hex');
+}
+
+export function signMessage(crypto: Crypto, message: string, privateKey: SigPrivateKey): Signature {
+  const decodedKey = crypto.base58.toBytes(privateKey as string);
+  const signature = crypto.secp256k1.sign(payload(crypto, message), decodedKey);
+
+  return crypto.base58.toString(signature);
+}
+
+export function verify(crypto: Crypto, message: string, signature: string, publicKey: string): boolean {
+  return crypto.secp256k1.verify(
+    payload(crypto, message),
+    crypto.base58.toBytes(signature),
+    crypto.base58.toBytes(publicKey),
+  );
+}
+
+export function verifySignature(crypto: Crypto, block: Block, signature: Signature, publicKey: SigPublicKey) {
   const message = JSON.stringify(block.getDataForSignature());
-  block.signature = signMessage(message, privateKey);
+  return verify(crypto, message, signature as string, publicKey as string);
 }
 
-export function signMessage(message: string, privateKey: SigPrivateKey) {
-  const decodedKey = bs58.decode(privateKey as string);
-  const { signature } = secp256k1.sign(Buffer.from(sha256(message), 'hex'), decodedKey);
-
-  return bs58.encode(signature);
+export function signBlock(crypto: Crypto, block: Block, privateKey: SigPrivateKey) {
+  const message = JSON.stringify(block.getDataForSignature());
+  block.signature = signMessage(crypto, message, privateKey);
 }

@@ -13,7 +13,7 @@ import { blockFields } from './open';
 import { signBlock } from './signatures';
 
 export async function createSendBlock(
-  _crypto: Crypto,
+  crypto: Crypto,
   prev: Block,
   publicSig: SigPublicKey,
   amount: string | number | bigint,
@@ -34,7 +34,7 @@ export async function createSendBlock(
 
   await blockFields(block, { prev, amount, balance });
 
-  signBlock(block, signatureKey);
+  signBlock(crypto, block, signatureKey);
 
   const tx = new Transaction();
 

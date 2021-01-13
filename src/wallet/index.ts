@@ -26,7 +26,7 @@ export default function (crypto: Crypto) {
     },
 
     async fromPrivateKey(privateKey: string): Promise<Wallet> {
-      const walletKeySet = await keySetSeeded(crypto, privateKey);
+      const walletKeySet = await keySetSeeded(crypto, Buffer.from(privateKey));
 
       return createWallet(crypto, walletKeySet);
     },

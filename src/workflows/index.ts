@@ -1,4 +1,4 @@
-export { keySet, keySetSeeded, getPublicSig } from './api/keyset';
+export { keySet, keySetSeeded } from './api/keyset';
 export { createAccountChain } from './accountchain';
 export { calcBalance } from './balance';
 export { send, sendTx } from './send';

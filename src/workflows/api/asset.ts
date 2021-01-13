@@ -17,7 +17,7 @@ import { blockFields } from './open';
 import { signBlock } from './signatures';
 
 export async function createAssetBlock(
-  _crypto: Crypto,
+  crypto: Crypto,
   publicSig: SigPublicKey,
   symbol: AssetSymbol,
   prev: Block,
@@ -35,7 +35,7 @@ export async function createAssetBlock(
 
   await blockFields(block, { amount: 0, balance: prev.senderBalance, prev });
 
-  signBlock(block, signatureKey);
+  signBlock(crypto, block, signatureKey);
 
   const tx = new Transaction(symbol);
   tx.blocks = [block];

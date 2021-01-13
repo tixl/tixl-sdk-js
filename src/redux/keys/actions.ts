@@ -36,7 +36,7 @@ export const restoreKeys = (sigPk: SigPrivateKey, setError: (err: string) => voi
   return async (dispatch: ThunkDispatch) => {
     // restore public sig key to load account chain
     try {
-      const publicSigKey = await runOnWorker<SigPublicKey>('getPublicSig', sigPk);
+      const publicSigKey = await runOnWorker<SigPublicKey>('loadPublicSigKey', sigPk);
 
       if (!publicSigKey) return;
       console.log('restored public signature key', { publicSigKey });

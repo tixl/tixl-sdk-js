@@ -13,7 +13,7 @@ import { blockFields } from './open';
 import { signBlock } from './signatures';
 
 export async function createReceiveBlock(
-  _crypto: Crypto,
+  crypto: Crypto,
   prev: Block,
   send: Block,
   publicSig: SigPublicKey,
@@ -35,7 +35,7 @@ export async function createReceiveBlock(
   }
 
   if (signatureKey) {
-    signBlock(block, signatureKey);
+    signBlock(crypto, block, signatureKey);
   }
 
   const tx = new Transaction(symbol);

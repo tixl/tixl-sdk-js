@@ -12,7 +12,7 @@ import {
 import { signBlock } from './signatures';
 
 export async function createOpeningBlock(
-  _crypto: Crypto,
+  crypto: Crypto,
   balance: string | number | bigint,
   publicSig: SigPublicKey,
   usePrev?: Block,
@@ -34,7 +34,7 @@ export async function createOpeningBlock(
   await blockFields(block, { amount: 0, balance, prev });
 
   if (signatureKey) {
-    signBlock(block, signatureKey);
+    signBlock(crypto, block, signatureKey);
   }
 
   const tx = new Transaction(symbol);

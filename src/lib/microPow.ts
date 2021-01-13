@@ -1,4 +1,4 @@
-import sha256 from 'js-sha256';
+import { sha256 } from 'js-sha256';
 
 export type HashPattern = { pos: number; character: string }[];
 

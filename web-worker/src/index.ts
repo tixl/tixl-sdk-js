@@ -12,7 +12,7 @@ import {
   keySet,
   keySetSeeded,
   calcBalance,
-  getPublicSig,
+  loadPublicSigKey,
   scanAllUnspentBlocks,
   deposit,
   withdraw,
@@ -70,8 +70,8 @@ onmessage = function (event: EventData) {
       case 'calcBalance':
         res = await calcBalance.apply(self, params);
         break;
-      case 'getPublicSig':
-        res = await getPublicSig.apply(self, params);
+      case 'loadPublicSigKey':
+        res = await loadPublicSigKey.apply(self, params);
         break;
       case 'scanAllUnspentBlocks':
         res = await scanAllUnspentBlocks.apply(self, params);
