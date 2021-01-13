@@ -2,23 +2,20 @@
   "name": "@tixl/tixl-sdk-js",
   "version": "0.3.7",
   "dependencies": {
-    "@tixl/tixl-ntru": "0.1.11",
-    "@tixl/tixl-pedersen-commitments": "2.1.1",
-    "@tixl/tixl-types": "0.6.12",
-    "aes-js": "3.1.2",
-    "axios": "0.19.2",
-    "base64-js": "1.3.1",
+    "@bitauth/libauth": "1.17.3",
+    "@tixl/tixl-types": "0.7.1",
+    "axios": "0.21.1",
     "bs58": "4.0.1",
-    "buffer": "5.4.3",
+    "buffer": "6.0.3",
     "build-query-string": "1.2.1",
+    "expo-random": "10.0.0",
     "hash-emoji": "0.0.4",
     "js-sha256": "0.9.0",
-    "jsbi": "3.1.1",
-    "lodash": "4.17.19",
+    "jsbi": "3.1.4",
+    "lodash": "4.17.20",
     "randombytes": "2.1.0",
-    "react-redux": "7.2.1",
+    "react-redux": "7.2.2",
     "redux": "4.0.5",
-    "redux-thunk": "2.3.0",
-    "secp256k1": "3.7.1"
+    "redux-thunk": "2.3.0"
   }
 }
