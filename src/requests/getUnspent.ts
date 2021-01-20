@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { Block, SigPublicKey } from '@tixl/tixl-types';
 
+import { getGatewayUrl } from '../helpers/env';
+
 export const getUnspent = async (signature: SigPublicKey): Promise<{ blocks: Block[] }> =>
-  axios.get(process.env.REACT_APP_GATEWAY + `/unspent?signature=${signature}`).then((res) => res.data);
+  axios.get(getGatewayUrl() + `/unspent?signature=${signature}`).then((res) => res.data);

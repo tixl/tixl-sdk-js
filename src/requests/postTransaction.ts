@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Transaction } from '@tixl/tixl-types';
 import flatMap from 'lodash/flatMap';
 
+import { getGatewayUrl } from '../helpers/env';
 import { GatewayErrors } from '../helpers/errors';
 import { workingCopy } from '../workflows/utils';
 
@@ -13,7 +14,7 @@ export async function postTransactionBody(body: any): Promise<PostTxResponse | G
   console.log('sending tx to gateway: ', body);
 
   return axios
-    .post<PostTxResponse>(process.env.REACT_APP_GATEWAY + '/transaction', body)
+    .post<PostTxResponse>(getGatewayUrl() + '/transaction', body)
     .then((res) => {
       if (res && res.data) {
         console.log('gateway responded', { hash: res.data.hash });

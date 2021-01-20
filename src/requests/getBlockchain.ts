@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { KeySet, Blockchain, SigPublicKey, fromBlockchainObject } from '@tixl/tixl-types';
 
+import { getGatewayUrl } from '../helpers/env';
+
 export function getBlockchain(keySet: KeySet) {
   return fetchBlockchain(keySet && keySet.sig.publicKey);
 }
@@ -15,7 +17,7 @@ export class BlockchainNotFoundError extends Error {
 
 export default function fetchBlockchain(sig: SigPublicKey): Promise<Blockchain> {
   return axios
-    .get(process.env.REACT_APP_GATEWAY + `/blockchain?signaturePublicKey=${sig}&full=true`)
+    .get(getGatewayUrl() + `/blockchain?signaturePublicKey=${sig}&full=true`)
     .then((res) => {
       if (!res.data || !res.data.blockchain) {
         throw new BlockchainNotFoundError(`Could not find blockchain for ${sig}`);

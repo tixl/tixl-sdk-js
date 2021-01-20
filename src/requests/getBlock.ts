@@ -2,9 +2,11 @@ import axios from 'axios';
 import buildQueryString from 'build-query-string';
 import { Block, fromBlockObject, Signature } from '@tixl/tixl-types';
 
+import { getGatewayUrl } from '../helpers/env';
+
 export const getBlock = (signature: Signature, txh = ''): Promise<Block | undefined> =>
   axios
-    .get(process.env.REACT_APP_GATEWAY + '/block?' + buildQueryString({ signature, txh }))
+    .get(getGatewayUrl() + '/block?' + buildQueryString({ signature, txh }))
     .then((res) => {
       if (!res.data || !res.data.block) return;
 

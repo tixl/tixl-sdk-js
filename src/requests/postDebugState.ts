@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 import { RootState } from '../redux';
+import { getGatewayUrl } from '../helpers/env';
 
 export async function postDebugState(state: RootState) {
   return axios
-    .post(process.env.REACT_APP_GATEWAY + '/dumpState', {
+    .post(getGatewayUrl() + '/dumpState', {
       state,
     })
     .then((res) => {
