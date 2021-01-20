@@ -29,9 +29,7 @@ export function updateNonces(tx: Transaction) {
   const nonces: Record<string, number[]> = {};
 
   tx.blocks.forEach((block) => {
-    console.time('microPow');
     const nonce = calculateDoublePow(block.signature as string);
-    console.timeEnd('microPow');
 
     // the next (new) transaction can lookup the POW for a block with its prev signature
     nonces[block.signature as string] = nonce;
