@@ -13,3 +13,4 @@ export { createReceiveBlock } from './api/receive';
 export { createDepositBlock } from './api/deposit';
 export { createWithdrawalBlock } from './api/withdraw';
 export { searchFunds } from './api/funds';
+export { sendFromTransientWallet, prepareTransientWallet } from './transient';

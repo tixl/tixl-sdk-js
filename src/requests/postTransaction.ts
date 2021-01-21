@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { Transaction } from '@tixl/tixl-types';
-import flatMap from 'lodash/flatMap';
 
 import { getGatewayUrl } from '../helpers/env';
 import { GatewayErrors } from '../helpers/errors';
-import { workingCopy } from '../workflows/utils';
+import { mergeTransactions } from '../helpers/transactions';
 
 export type PostTxResponse = {
   hash: string;
@@ -39,13 +38,14 @@ export async function postTransaction(transaction: Transaction): Promise<PostTxR
   return postTransactionBody({ transaction });
 }
 
+export async function postTransactions(transactions: Transaction[]): Promise<PostTxResponse | GatewayErrors> {
+  return postTransactionBody({ transactions });
+}
+
 export async function mergePostTransactions(transactions: Transaction[]): Promise<PostTxResponse | GatewayErrors> {
   if (!transactions || transactions.length === 0) throw new Error('No transactions to post');
 
-  const tx = workingCopy(transactions[0]);
-  const blocks = flatMap(transactions, (tx) => tx.blocks);
-
-  tx.blocks = blocks;
+  const tx = mergeTransactions(transactions);
 
   return postTransaction(tx);
 }

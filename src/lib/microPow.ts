@@ -1,3 +1,4 @@
+import { Transaction } from '@tixl/tixl-types';
 import { sha256 } from 'js-sha256';
 
 export type HashPattern = { pos: number; character: string }[];
@@ -41,4 +42,11 @@ function matchesHashPattern(target: HashPattern, x: string) {
     if (x[pos] !== character) return false;
   }
   return true;
+}
+
+// Calculate and set nonces on each block of the transaction
+export function setTxBlockNonces(tx: Transaction) {
+  tx.blocks.forEach((block) => {
+    block.nonce = calculateDoublePow((block.prev || block.signature) as string);
+  });
 }

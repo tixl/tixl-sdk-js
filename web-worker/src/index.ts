@@ -19,6 +19,8 @@ import {
   createAccountChain,
   receive,
   send,
+  prepareTransientWallet,
+  sendFromTransientWallet,
 } from '../../src/workflows';
 
 import createCrypto from './crypto';
@@ -91,6 +93,12 @@ onmessage = function (event: EventData) {
         break;
       case 'send':
         res = await send.apply(self, params);
+        break;
+      case 'prepareTransientWallet':
+        res = await prepareTransientWallet.apply(self, params);
+        break;
+      case 'sendFromTransientWallet':
+        res = await sendFromTransientWallet.apply(self, params);
         break;
       default:
         console.log('missing method', action);
