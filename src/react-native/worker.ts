@@ -1,3 +1,5 @@
+import cloneDeepWith from 'lodash/cloneDeepWith';
+
 import {
   keySet,
   keySetSeeded,
@@ -10,7 +12,7 @@ import {
   receive,
   send,
 } from '../workflows';
-
+import { cloneValue } from '../helpers/cloneValue';
 import createCrypto from './crypto';
 
 const crypto = createCrypto();
@@ -19,13 +21,16 @@ const crypto = createCrypto();
 // Run on "web worker" for react-native.
 // Since there are no web workers, start the crypto and run functions directly.
 //
-async function runOnWorker<T>(action: string, ...params: any[]): Promise<T | undefined> {
+async function runOnWorker<T>(action: string, ...paramsIn: any[]): Promise<T | undefined> {
   return new Promise(async (resolve, reject) => {
     // the crypto object is referenced here, so that the dependency is loaded
     // only in this environment
     // @ts-ignore
 
-    const passParams = [crypto, ...params];
+    const params: any = paramsIn.map((item: any) => cloneDeepWith(item, cloneValue));
+
+    // prepend crypto as first param
+    params.splice(0, 0, crypto);
 
     switch (action) {
       case 'keySet':

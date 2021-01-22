@@ -1,14 +1,5 @@
 import cloneDeepWith from 'lodash/cloneDeepWith';
 import {
-  fromBlockObject,
-  fromBlockchainObject,
-  Blockchain,
-  isBlockchain,
-  isBlockchainRecord,
-  isBlock,
-} from '@tixl/tixl-types';
-
-import {
   keySet,
   keySetSeeded,
   calcBalance,
@@ -24,24 +15,7 @@ import {
 } from '../../src/workflows';
 
 import createCrypto from './crypto';
-
-// restore object class methods e.g. leaf() or blocks()
-// objects get serialized and lose their class methods...
-function cloneValue(val: any) {
-  if (isBlockchain(val)) return fromBlockchainObject(val);
-  if (isBlock(val)) return fromBlockObject(val);
-  if (isBlockchainRecord(val)) {
-    const res: Record<string, Blockchain> = {};
-
-    Object.keys(val).map((key: string) => {
-      const obj = val[key];
-      res[key] = isBlockchain(obj) ? fromBlockchainObject(val[key]) : obj;
-    });
-
-    return res;
-  }
-  return val;
-}
+import { cloneValue } from '../../src/helpers/cloneValue';
 
 // init web-worker based crypto functions
 const crypto = createCrypto();
