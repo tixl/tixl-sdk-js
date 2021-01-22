@@ -15,6 +15,8 @@ import {
 import { cloneValue } from '../helpers/cloneValue';
 import createCrypto from './crypto';
 
+// the crypto object is referenced here, so that the dependency is loaded
+// only in this environment
 const crypto = createCrypto();
 
 //
@@ -23,10 +25,6 @@ const crypto = createCrypto();
 //
 async function runOnWorker<T>(action: string, ...paramsIn: any[]): Promise<T | undefined> {
   return new Promise(async (resolve, reject) => {
-    // the crypto object is referenced here, so that the dependency is loaded
-    // only in this environment
-    // @ts-ignore
-
     const params: any = paramsIn.map((item: any) => cloneDeepWith(item, cloneValue));
 
     // prepend crypto as first param
@@ -35,43 +33,43 @@ async function runOnWorker<T>(action: string, ...paramsIn: any[]): Promise<T | u
     switch (action) {
       case 'keySet':
         // @ts-ignore
-        resolve(keySet(...passParams));
+        resolve(keySet(...params));
         break;
       case 'keySetSeeded':
         // @ts-ignore
-        resolve(keySetSeeded(...passParams));
+        resolve(keySetSeeded(...params));
         break;
       case 'calcBalance':
         // @ts-ignore
-        resolve(calcBalance(...passParams));
+        resolve(calcBalance(...params));
         break;
       case 'loadPublicSigKey':
         // @ts-ignore
-        resolve(loadPublicSigKey(...passParams));
+        resolve(loadPublicSigKey(...params));
         break;
       case 'scanAllUnspentBlocks':
         // @ts-ignore
-        resolve(scanAllUnspentBlocks(...passParams));
+        resolve(scanAllUnspentBlocks(...params));
         break;
       case 'deposit':
         // @ts-ignore
-        resolve(deposit(...passParams));
+        resolve(deposit(...params));
         break;
       case 'withdraw':
         // @ts-ignore
-        resolve(withdraw(...passParams));
+        resolve(withdraw(...params));
         break;
       case 'createAccountChain':
         // @ts-ignore
-        resolve(createAccountChain(...passParams));
+        resolve(createAccountChain(...params));
         break;
       case 'receive':
         // @ts-ignore
-        resolve(receive(...passParams));
+        resolve(receive(...params));
         break;
       case 'send':
         // @ts-ignore
-        resolve(send(...passParams));
+        resolve(send(...params));
         break;
       default:
         console.log('missing method', action as any);
