@@ -1,5 +1,8 @@
 import { Buffer } from 'buffer';
 import { Block, Crypto, SigPrivateKey, SigPublicKey, Signature } from '@tixl/tixl-types';
+import _debug from 'debug';
+
+const debug = _debug('sdk:signatures');
 
 export function generatePrivateKey(crypto: Crypto): Buffer {
   let privateKey;
@@ -51,10 +54,12 @@ export function verify(crypto: Crypto, message: string, signature: string, publi
 
 export function verifySignature(crypto: Crypto, block: Block, signature: Signature, publicKey: SigPublicKey) {
   const message = JSON.stringify(block.getDataForSignature());
+  debug('verify signature message', message);
   return verify(crypto, message, signature as string, publicKey as string);
 }
 
 export function signBlock(crypto: Crypto, block: Block, privateKey: SigPrivateKey) {
   const message = JSON.stringify(block.getDataForSignature());
+  debug('sign signature message', message);
   block.signature = signMessage(crypto, message, privateKey);
 }
