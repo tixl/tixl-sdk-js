@@ -10,19 +10,19 @@ import { WithdrawTaskData } from '../actionTypes';
 import { WithdrawTx } from '../../../workflows/withdraw';
 import { setTxProofOfWork } from '../selectors';
 
-export async function handleWithdrawTask(dispatch: ThunkDispatch, task: WithdrawTaskData) {
+export async function handleWithdrawTask(dispatch: ThunkDispatch, task: WithdrawTaskData, symbol: AssetSymbol) {
   console.log('withdraw', { task });
 
   await dispatch(progressTask(task));
 
-  const signatures = await dispatch(createWithdrawBlock(task.withdrawAmount, task.bitcoinAddress));
+  const signatures = await dispatch(createWithdrawBlock(task.withdrawAmount, task.bitcoinAddress, symbol));
 
   if (signatures) {
     dispatch(waitNetwork(task, signatures));
   }
 }
 
-export const createWithdrawBlock = (amount: string, btcAddress: string) => {
+export const createWithdrawBlock = (amount: string, address: string, symbol: AssetSymbol) => {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     dispatch(signalWithdraw());
 
@@ -34,8 +34,8 @@ export const createWithdrawBlock = (amount: string, btcAddress: string) => {
       state.keys,
       accountChain,
       amount,
-      btcAddress,
-      AssetSymbol.BTC,
+      address,
+      symbol,
     );
 
     if (!withdrawResult) return;

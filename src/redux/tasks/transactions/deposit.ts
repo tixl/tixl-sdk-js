@@ -12,19 +12,24 @@ import { DepositTaskData } from '../actionTypes';
 import { progressTask, updateNonces, waitNetwork } from '../actions';
 import { setTxProofOfWork } from '../selectors';
 
-export async function handleDepositTask(dispatch: ThunkDispatch, task: DepositTaskData) {
+export async function handleDepositTask(dispatch: ThunkDispatch, task: DepositTaskData, symbol: AssetSymbol) {
   console.log('deposit', { task });
 
   await dispatch(progressTask(task));
 
-  const signatures = await dispatch(createDepositBlock(task.transactionHash, task.value, task.claimSignature));
+  const signatures = await dispatch(createDepositBlock(task.transactionHash, task.value, symbol, task.claimSignature));
 
   if (signatures) {
     dispatch(waitNetwork(task, signatures));
   }
 }
 
-export const createDepositBlock = (transactionHash: string, value: string, claimSignature?: string) => {
+export const createDepositBlock = (
+  transactionHash: string,
+  value: string,
+  symbol: AssetSymbol,
+  claimSignature?: string,
+) => {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     const state = getState();
     const keys = getKeys(state);
@@ -36,7 +41,7 @@ export const createDepositBlock = (transactionHash: string, value: string, claim
       accountChain,
       value,
       transactionHash,
-      AssetSymbol.BTC,
+      symbol,
       claimSignature,
     );
 
