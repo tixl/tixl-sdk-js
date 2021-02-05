@@ -72,23 +72,30 @@ export function createSendTask(amount: string, address: string, symbol: AssetSym
   };
 }
 
-export function createDepositTask(transactionHash: string, value: string, claimSignature?: string) {
+export function createDepositTask(
+  transactionHash: string,
+  value: string,
+  symbol: AssetSymbol,
+  claimSignature?: string,
+) {
   return {
     type: CREATE_DEPOSIT_TASK,
     task: {
       transactionHash,
       value,
+      symbol,
       claimSignature,
     },
   };
 }
 
-export function createWithdrawTask(withdrawAmount: string, bitcoinAddress: string) {
+export function createWithdrawTask(withdrawAmount: string, symbol: AssetSymbol, address: string) {
   return {
     type: CREATE_WITHDRAW_TASK,
     task: {
       withdrawAmount,
-      bitcoinAddress,
+      address,
+      symbol,
     },
   };
 }

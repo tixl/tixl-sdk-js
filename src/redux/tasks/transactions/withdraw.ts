@@ -15,7 +15,7 @@ export async function handleWithdrawTask(dispatch: ThunkDispatch, task: Withdraw
 
   await dispatch(progressTask(task));
 
-  const signatures = await dispatch(createWithdrawBlock(task.withdrawAmount, task.bitcoinAddress, symbol));
+  const signatures = await dispatch(createWithdrawBlock(task.withdrawAmount, task.address, symbol));
 
   if (signatures) {
     dispatch(waitNetwork(task, signatures));

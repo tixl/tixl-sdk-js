@@ -55,11 +55,14 @@ export type ReceiveTaskData = TaskData & {
 
 export type WithdrawTaskData = TaskData & {
   withdrawAmount: string;
-  bitcoinAddress: string;
+  address: string;
+  symbol: AssetSymbol;
 };
+
 export type DepositTaskData = TaskData & {
   transactionHash: string;
   value: string;
+  symbol: AssetSymbol;
   claimSignature?: string;
 };
 
