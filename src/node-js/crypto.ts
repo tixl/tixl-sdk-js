@@ -6,9 +6,10 @@ import { Crypto } from '@tixl/tixl-types';
 
 let secp256k1: Secp256k1;
 
-(async () => {
+export const init = new Promise<void>(async (resolve) => {
   secp256k1 = await instantiateSecp256k1();
-})();
+  resolve();
+});
 
 /**
  * Creates the crypto environment for nodejs.
