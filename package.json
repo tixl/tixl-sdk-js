@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@bitauth/libauth": "1.17.3",
-    "@tixl/tixl-types": "0.7.1",
+    "@tixl/tixl-types": "0.7.2",
     "axios": "0.21.1",
     "bs58": "4.0.1",
     "buffer": "6.0.3",

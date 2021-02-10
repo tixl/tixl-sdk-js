@@ -19,10 +19,10 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.2.tgz#8f03a22a04de437254e8ce8cc84ba39689288752"
   integrity sha512-HyYEUDeIj5rRQU2Hk5HTB2uHsbRQpF70nvMhVzi+VJR0X+xNEhjPui4/kBf3VeH/wqD28PT4sVOm8qqLjBrSZg==
 
-"@tixl/tixl-types@0.7.1":
-  version "0.7.1"
-  resolved "https://npm.pkg.github.com/download/@tixl/tixl-types/0.7.1/003557503eafa116d2dbb3a9be454c575876b720be4b47c5011b1904bf27aa72#02aaf518f627be9f70d9404e79bb1fdae31e141c"
-  integrity sha512-V/wxA8nh/2reHPYM50B6GUDkcBoVifPGQHMDTi2K1xZ9ouOdRDVKYYQO0l2eO+SdO3alHa4nCKL1ZJKqU1Byqg==
+"@tixl/tixl-types@0.7.2":
+  version "0.7.2"
+  resolved "https://npm.pkg.github.com/download/@tixl/tixl-types/0.7.2/6d13321d2ecf08c1b626d6c854bdb1f427b46f3a9d6e6811d2fcfdfebd805496#e8a81c48c598515e0529e715ec8b77bd1b0d80bd"
+  integrity sha512-1+BsYbWG29LzNylp//411zWQVQEVXi4SFN4aUp1RlCe1iGMNxGg4kLlQSTB2LnxygUN9aWszh8mF06UjJOoxPQ==
   dependencies:
     jsbi "3.1.4"
 
