@@ -3,7 +3,6 @@
   "version": "0.6.5",
   "dependencies": {
     "@bitauth/libauth": "1.17.3",
-    "@tixl/tixl-types": "0.7.2",
     "axios": "0.21.1",
     "bs58": "4.0.1",
     "buffer": "6.0.3",
@@ -17,5 +16,8 @@
     "react-redux": "7.2.2",
     "redux": "4.0.5",
     "redux-thunk": "2.3.0"
+  },
+  "peerDependencies": {
+    "@tixl/tixl-types": "0.7.2"
   }
 }
