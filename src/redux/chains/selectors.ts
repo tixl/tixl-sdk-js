@@ -1,4 +1,4 @@
-import { AssetSymbol, Block, Blockchain, SigPublicKey, Signature } from '@tixl/tixl-types';
+import { Block, SigPublicKey, Signature } from '@tixl/tixl-types';
 
 import { RootState } from '..';
 import { getKeys } from '../keys/selectors';
@@ -38,7 +38,7 @@ export const getChain = (state: RootState, publicSig: SigPublicKey): BlockchainW
   return state.chains.signatureToChain[publicSig as string] || null;
 };
 
-export const getDepositBlock = (state: RootState, btcTransactionHash: string): Block | null => {
+export const getDepositBlock = (state: RootState, transactionHash: string): Block | null => {
   let depositBlock = null;
   const chainKeys = Object.keys(state.chains.signatureToChain);
 
@@ -46,7 +46,7 @@ export const getDepositBlock = (state: RootState, btcTransactionHash: string): B
     const blockchain = state.chains.signatureToChain[key];
 
     blockchain.blocks.forEach((block: Block) => {
-      if (block.refAsset === btcTransactionHash) {
+      if (block.refAsset === transactionHash) {
         depositBlock = block;
       }
     });
@@ -89,3 +89,9 @@ export const getBlockState = (state: RootState, signature: Signature): BlockStat
 
   return blockState;
 };
+
+export function acceptedDepositBlock(state: RootState, transactionHash: string) {
+  const block = getDepositBlock(state, transactionHash);
+
+  return block && block.state === 'accepted' ? true : false;
+}

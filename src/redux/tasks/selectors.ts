@@ -44,3 +44,7 @@ export function sendBlockTask(state: RootState, sendSignature: Signature): boole
 
   return receiveIndex !== -1;
 }
+
+export function depositTaskExists(state: RootState, transactionHash: string): boolean {
+  return state.tasks.deposit.find((task) => task.transactionHash === transactionHash) !== undefined;
+}
