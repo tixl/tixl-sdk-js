@@ -49,6 +49,6 @@
     "webpack-cli": "4.3.1"
   },
   "peerDependencies": {
-    "@tixl/tixl-types": "0.7.2"
+    "@tixl/tixl-types": "0.7.3"
   }
 }
