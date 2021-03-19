@@ -1,13 +1,14 @@
-import { AssetSymbol, Signature } from '@tixl/tixl-types';
+import { AssetSymbol, fromBlockchainObject } from '@tixl/tixl-types';
+import flatMap from 'lodash/flatMap';
 
 import { ThunkDispatch, RootState } from '../..';
 import { signalWithdraw, progressTask, waitNetwork, updateNonces } from '../actions';
 import { getAccountChain } from '../../chains/selectors';
 import { runOnWorker } from '../../../helpers/worker';
 import { updateChain } from '../../chains/actions';
-import { postTransaction } from '../../../requests/postTransaction';
+import { mergePostTransactions } from '../../../requests/postTransaction';
 import { WithdrawTaskData } from '../actionTypes';
-import { WithdrawTx } from '../../../workflows/withdraw';
+import { WithdrawChanges } from '../../../workflows/withdraw';
 import { setTxProofOfWork } from '../selectors';
 
 export async function handleWithdrawTask(dispatch: ThunkDispatch, task: WithdrawTaskData, symbol: AssetSymbol) {
@@ -15,39 +16,70 @@ export async function handleWithdrawTask(dispatch: ThunkDispatch, task: Withdraw
 
   await dispatch(progressTask(task));
 
-  const signatures = await dispatch(createWithdrawBlock(task.withdrawAmount, task.address, symbol));
+  const signatures = await dispatch(
+    createWithdrawTransaction(task.withdrawAmount, task.address, symbol, task.burnAmount),
+  );
 
   if (signatures) {
     dispatch(waitNetwork(task, signatures));
   }
 }
 
-export const createWithdrawBlock = (amount: string, address: string, symbol: AssetSymbol) => {
+export function createWithdrawTransaction(amount: string, address: string, symbol: AssetSymbol, burnAmount?: string) {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     dispatch(signalWithdraw());
 
     const state = getState();
-    const accountChain = getAccountChain(state);
 
-    const withdrawResult = await runOnWorker<WithdrawTx | false>(
+    const accountChain = fromBlockchainObject(getAccountChain(state));
+
+    if (!accountChain) return;
+
+    const withdrawData = await runOnWorker<WithdrawChanges | false>(
       'withdraw',
       state.keys,
       accountChain,
       amount,
       address,
       symbol,
+      burnAmount,
     );
 
-    if (!withdrawResult) return;
+    if (!withdrawData) return;
 
-    setTxProofOfWork(state, withdrawResult.tx);
+    const updates = [];
 
-    await postTransaction(withdrawResult.tx);
+    if (withdrawData.ethBurn) {
+      updates.push(withdrawData.ethBurn);
+    }
 
-    dispatch(updateNonces(withdrawResult.tx));
-    dispatch(updateChain(withdrawResult.blockchain));
+    if (withdrawData.assetWithdraw) {
+      updates.push(withdrawData.assetWithdraw);
+    }
+
+    // write update to own state
+    dispatch(updateChain(withdrawData.assetWithdraw.blockchain));
+
+    // proof of work
+    updates.forEach((update) => {
+      setTxProofOfWork(state, update.tx);
+    });
+
+    const txs = updates.map((update) => update.tx);
+
+    // build one tx and send to gateway
+    await mergePostTransactions(txs);
+
+    //  precalc pow
+    await Promise.all(
+      updates.map(async (update) => {
+        await dispatch(updateNonces(update.tx));
+      }),
+    );
 
     // collect new block signatures and wait for network result
-    return [withdrawResult.withdrawBlock.signature];
+    const signatures = flatMap(updates, (update) => update.tx.blocks.map((block) => block.signature));
+
+    return signatures;
   };
-};
+}

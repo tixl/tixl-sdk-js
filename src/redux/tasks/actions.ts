@@ -89,13 +89,14 @@ export function createDepositTask(
   };
 }
 
-export function createWithdrawTask(withdrawAmount: string, symbol: AssetSymbol, address: string) {
+export function createWithdrawTask(withdrawAmount: string, symbol: AssetSymbol, address: string, burnAmount?: string) {
   return {
     type: CREATE_WITHDRAW_TASK,
     task: {
       withdrawAmount,
       address,
       symbol,
+      burnAmount,
     },
   };
 }

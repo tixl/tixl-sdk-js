@@ -7,7 +7,6 @@ import { doneTask, progressTask, waitNetwork, signalReceive, abortTask, updateNo
 import { getBlock } from '../../../requests/getBlock';
 import { runOnWorker } from '../../../helpers/worker';
 import { getBlockchainInfo } from '../../../requests/getBlockchainInfo';
-import { shortSignatureEmoji } from '../../../helpers/hash';
 import { getKeys } from '../../keys/selectors';
 import { updateChain } from '../../chains/actions';
 import { mergePostTransactions } from '../../../requests/postTransaction';

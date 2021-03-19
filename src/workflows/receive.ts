@@ -5,12 +5,6 @@ import { createReceiveBlock } from './api/receive';
 import { workingCopy } from './utils';
 import { assetTx } from './api/asset';
 
-export type ReceiveTx = {
-  blockchain: Blockchain;
-  tx: Transaction;
-  receiveBlock: Block;
-};
-
 export type ReceiveChanges = {
   accountchainAsset:
     | {
@@ -22,6 +16,12 @@ export type ReceiveChanges = {
     tx: Transaction;
     blockchain: Blockchain;
   };
+};
+
+export type ReceiveTx = {
+  blockchain: Blockchain;
+  tx: Transaction;
+  receiveBlock: Block;
 };
 
 export async function receiveTx(

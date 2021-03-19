@@ -57,6 +57,7 @@ export type WithdrawTaskData = TaskData & {
   withdrawAmount: string;
   address: string;
   symbol: AssetSymbol;
+  burnAmount?: string;
 };
 
 export type DepositTaskData = TaskData & {

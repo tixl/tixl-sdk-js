@@ -96,6 +96,8 @@ export function reducer(state = initialState, action: GeneralAction): TasksRedux
       };
 
     case WAIT_NETWORK:
+      if (!action.signatures || action.signatures.length === 0) return state;
+
       return {
         ...state,
         networkApprovals: state.networkApprovals.concat({
