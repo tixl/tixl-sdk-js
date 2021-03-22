@@ -6,7 +6,7 @@ import { signalWithdraw, progressTask, waitNetwork, updateNonces } from '../acti
 import { getAccountChain } from '../../chains/selectors';
 import { runOnWorker } from '../../../helpers/worker';
 import { updateChain } from '../../chains/actions';
-import { mergePostTransactions } from '../../../requests/postTransaction';
+import { mergePostTransactions, postTransactions } from '../../../requests/postTransaction';
 import { WithdrawTaskData } from '../actionTypes';
 import { WithdrawChanges } from '../../../workflows/withdraw';
 import { setTxProofOfWork } from '../selectors';
@@ -67,8 +67,8 @@ export function createWithdrawTransaction(amount: string, address: string, symbo
 
     const txs = updates.map((update) => update.tx);
 
-    // build one tx and send to gateway
-    await mergePostTransactions(txs);
+    // send txs to gateway
+    await postTransactions(txs);
 
     //  precalc pow
     await Promise.all(
