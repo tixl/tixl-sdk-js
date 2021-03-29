@@ -1,4 +1,4 @@
-import { Block, SigPublicKey, Signature } from '@tixl/tixl-types';
+import { Block, SigPublicKey, Signature, BlockType } from '@tixl/tixl-types';
 
 import { RootState } from '..';
 import { getKeys } from '../keys/selectors';
@@ -94,4 +94,18 @@ export function acceptedDepositBlock(state: RootState, transactionHash: string) 
   const block = getDepositBlock(state, transactionHash);
 
   return block && block.state === 'accepted' ? true : false;
+}
+
+export function acceptedDepositBlocks(state: RootState) {
+  const acceptedBlocks: BlockWithAdditionalInfo[] = [];
+
+  Object.values(state.chains.signatureToChain).forEach((chain: BlockchainWithAdditionalInfo) => {
+    chain.blocks.forEach((block: BlockWithAdditionalInfo) => {
+      if (block.type === BlockType.DEPOSIT && block.state === 'accepted') {
+        acceptedBlocks.push(block);
+      }
+    });
+  });
+
+  return acceptedBlocks;
 }

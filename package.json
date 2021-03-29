@@ -3,7 +3,7 @@
   "version": "0.7.3",
   "scripts": {
     "prepublish": "yarn build",
-    "build": "yarn build:js && yarn build:package && yarn build:worker",
+    "build": "rm -rf dist && yarn build:js && yarn build:package && yarn build:worker",
     "build:js": "tsc",
     "build:package": "cp src/_package.json dist/package.json && touch dist/.npmignore && cp .yarnrc dist/",
     "build:worker": "npx webpack --config web-worker/webpack.config.js"

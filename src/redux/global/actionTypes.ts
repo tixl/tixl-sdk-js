@@ -1,5 +1,9 @@
-import { RESET_ALL_DATA } from './actionKeys';
+import { RESET_ALL_DATA, CLEAN_UP_STATE } from './actionKeys';
 
 export interface ResetAllDataAction {
   type: typeof RESET_ALL_DATA;
+}
+
+export interface CleanUpStateAction {
+  type: typeof CLEAN_UP_STATE;
 }

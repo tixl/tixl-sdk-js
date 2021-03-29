@@ -2,6 +2,7 @@ import { Block, Signature, Transaction } from '@tixl/tixl-types';
 
 import { RootState } from '..';
 import { calculateDoublePow } from '../../lib/microPow';
+import { TaskData } from './actionTypes';
 
 export function setTxProofOfWork(state: RootState, tx: Transaction) {
   tx.blocks = tx.blocks.map((block) => {
@@ -47,4 +48,8 @@ export function sendBlockTask(state: RootState, sendSignature: Signature): boole
 
 export function depositTaskExists(state: RootState, transactionHash: string): boolean {
   return state.tasks.deposit.find((task) => task.transactionHash === transactionHash) !== undefined;
+}
+
+export function depositTask(state: RootState, transactionHash: string): TaskData | undefined {
+  return state.tasks.deposit.find((task) => task.transactionHash === transactionHash);
 }
