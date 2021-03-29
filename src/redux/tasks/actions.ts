@@ -20,7 +20,7 @@ import {
 } from './actionKeys';
 import { TaskData } from './actionTypes';
 
-import { sendBlockTask } from './selectors';
+import { depositTaskExists, sendBlockTask } from './selectors';
 import { TasksReduxState } from './reducer';
 import { ThunkDispatch, RootState } from '..';
 import { calculateDoublePow } from '../../lib/microPow';
@@ -78,14 +78,21 @@ export function createDepositTask(
   symbol: AssetSymbol,
   claimSignature?: string,
 ) {
-  return {
-    type: CREATE_DEPOSIT_TASK,
-    task: {
-      transactionHash,
-      value,
-      symbol,
-      claimSignature,
-    },
+  return async (dispatch: ThunkDispatch, getState: () => RootState) => {
+    if (depositTaskExists(getState(), transactionHash)) {
+      console.log('skip task creation: duplicate task');
+      return;
+    }
+
+    return dispatch({
+      type: CREATE_DEPOSIT_TASK,
+      task: {
+        transactionHash,
+        value,
+        symbol,
+        claimSignature,
+      },
+    });
   };
 }
 
