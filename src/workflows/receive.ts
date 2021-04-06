@@ -35,7 +35,7 @@ export async function receiveTx(
   const blockchainCopy = workingCopy(blockchain);
 
   const newBalance = JSBI.add(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(send.senderAmount));
-  console.log('receive balance', newBalance);
+  console.log('receive balance', newBalance.toString());
 
   const receive2wallet = await createReceiveBlock(
     crypto,

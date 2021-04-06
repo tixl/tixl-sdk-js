@@ -183,33 +183,31 @@ export function onNewNetworkResult(signature: Signature, state: 'accepted' | 're
   };
 }
 
-const TASK_EXPIRATION_SKIP_MIN = 20;
-
-export function abortSkippedTasks() {
+export function abortSkippedTasks(minOption = 20) {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     const tasks = getState().tasks;
 
     for (const task of tasks.deposit) {
-      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
-        dispatch(skipTask(task.id));
+      if (task.skipCounter > minOption) {
+        dispatch(abortTask(task.id));
       }
     }
 
     for (const task of tasks.withdraw) {
-      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
-        dispatch(skipTask(task.id));
+      if (task.skipCounter > minOption) {
+        dispatch(abortTask(task.id));
       }
     }
 
     for (const task of tasks.receive) {
-      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
-        dispatch(skipTask(task.id));
+      if (task.skipCounter > minOption) {
+        dispatch(abortTask(task.id));
       }
     }
 
     for (const task of tasks.send) {
-      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
-        dispatch(skipTask(task.id));
+      if (task.skipCounter > minOption) {
+        dispatch(abortTask(task.id));
       }
     }
   };
