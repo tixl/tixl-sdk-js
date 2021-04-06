@@ -1,6 +1,6 @@
 {
   "name": "@tixl/tixl-sdk-js",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "scripts": {
     "prepublish": "yarn build",
     "build": "rm -rf dist && yarn build:js && yarn build:package && yarn build:worker",
