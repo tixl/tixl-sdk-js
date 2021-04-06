@@ -18,12 +18,16 @@ import {
   CREATE_WITHDRAW_TASK,
   UPDATE_NONCES,
 } from './actionKeys';
-import { TaskData } from './actionTypes';
+import { DepositTaskData, ReceiveTaskData, SendTaskData, TaskData, WithdrawTaskData } from './actionTypes';
 
 import { depositTaskExists, sendBlockTask } from './selectors';
 import { TasksReduxState } from './reducer';
 import { ThunkDispatch, RootState } from '..';
 import { calculateDoublePow } from '../../lib/microPow';
+import { handleSendTask } from './transactions/send';
+import { handleReceiveTask } from './transactions/receive';
+import { handleDepositTask } from './transactions/deposit';
+import { handleWithdrawTask } from './transactions/withdraw';
 
 export function updateNonces(tx: Transaction) {
   const nonces: Record<string, number[]> = {};
@@ -176,6 +180,96 @@ export function onNewNetworkResult(signature: Signature, state: 'accepted' | 're
         console.error('unsure on network result', { signature, state });
       }
     });
+  };
+}
+
+const TASK_EXPIRATION_SKIP_MIN = 20;
+
+export function abortSkippedTasks() {
+  return async (dispatch: ThunkDispatch, getState: () => RootState) => {
+    const tasks = getState().tasks;
+
+    for (const task of tasks.deposit) {
+      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
+        dispatch(skipTask(task.id));
+      }
+    }
+
+    for (const task of tasks.withdraw) {
+      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
+        dispatch(skipTask(task.id));
+      }
+    }
+
+    for (const task of tasks.receive) {
+      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
+        dispatch(skipTask(task.id));
+      }
+    }
+
+    for (const task of tasks.send) {
+      if (task.skipCounter > TASK_EXPIRATION_SKIP_MIN) {
+        dispatch(skipTask(task.id));
+      }
+    }
+  };
+}
+
+function pick(list: TaskData[]) {
+  return list.find((task) => {
+    if (task.skipCounter > 2) {
+      // for every skip, delay task picking by seconds
+      const delay = Math.pow(task.skipCounter, 2) * 1000;
+
+      if (new Date().getTime() < task.createdAt + delay) return false;
+    }
+
+    // be default just take any task
+    return true;
+  });
+}
+
+export function pickAndRunTask() {
+  return async (dispatch: ThunkDispatch, getState: () => RootState) => {
+    const keySet = getState().keys;
+    const state = getState().tasks;
+    const inProgress = state.inProgress;
+    const toSend = state.send;
+    const toReceive = state.receive;
+    const toWithdraw = state.withdraw;
+    const toDeposit = state.deposit;
+
+    if (!keySet) return;
+
+    // super basic logic to decide what to do next
+    // if nothing in progress take first send task
+    if (inProgress.length === 0 && toSend.length > 0) {
+      const sendTask = pick(toSend);
+      if (sendTask) return handleSendTask(dispatch, sendTask as SendTaskData);
+    }
+
+    // then withdraws
+    if (inProgress.length === 0 && toWithdraw.length > 0) {
+      const withdrawTask = pick(toWithdraw);
+      if (withdrawTask)
+        return handleWithdrawTask(
+          dispatch,
+          withdrawTask as WithdrawTaskData,
+          (withdrawTask as WithdrawTaskData).symbol,
+        );
+    }
+
+    // then receive tasks
+    if (inProgress.length === 0 && toReceive.length > 0) {
+      const receiveTask = pick(toReceive);
+      if (receiveTask) return handleReceiveTask(dispatch, getState(), receiveTask as ReceiveTaskData);
+    }
+
+    // then deposits
+    if (inProgress.length === 0 && toDeposit.length > 0) {
+      const depositTask = pick(toDeposit);
+      return handleDepositTask(dispatch, depositTask as DepositTaskData, (depositTask as WithdrawTaskData).symbol);
+    }
   };
 }
 

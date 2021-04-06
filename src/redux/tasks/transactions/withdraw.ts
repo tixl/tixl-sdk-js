@@ -6,7 +6,7 @@ import { signalWithdraw, progressTask, waitNetwork, updateNonces } from '../acti
 import { getAccountChain } from '../../chains/selectors';
 import { runOnWorker } from '../../../helpers/worker';
 import { updateChain } from '../../chains/actions';
-import { mergePostTransactions, postTransactions } from '../../../requests/postTransaction';
+import { postTransactions } from '../../../requests/postTransaction';
 import { WithdrawTaskData } from '../actionTypes';
 import { WithdrawChanges } from '../../../workflows/withdraw';
 import { setTxProofOfWork } from '../selectors';
