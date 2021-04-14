@@ -1,6 +1,6 @@
 {
   "name": "@tixl/tixl-sdk-js",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "dependencies": {
     "@bitauth/libauth": "1.17.3",
     "axios": "0.21.1",
