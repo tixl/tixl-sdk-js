@@ -20,7 +20,7 @@ import {
 } from './actionKeys';
 import { DepositTaskData, ReceiveTaskData, SendTaskData, TaskData, WithdrawTaskData } from './actionTypes';
 
-import { depositTaskExists, sendBlockTask } from './selectors';
+import { depositTaskExists, receiveTaskExists, sendTaskExist, withdrawTaskExist } from './selectors';
 import { TasksReduxState } from './reducer';
 import { ThunkDispatch, RootState } from '..';
 import { calculateDoublePow } from '../../lib/microPow';
@@ -48,7 +48,7 @@ export function updateNonces(tx: Transaction) {
 export function createReceiveTask(sendSignature: Signature, sendHash?: string, symbol?: AssetSymbol) {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     // check that there is not already a receive task for the send block
-    if (sendBlockTask(getState(), sendSignature)) {
+    if (receiveTaskExists(getState(), sendSignature)) {
       console.log('skip task creation: duplicate task');
       return;
     }
@@ -65,14 +65,22 @@ export function createReceiveTask(sendSignature: Signature, sendHash?: string, s
 }
 
 export function createSendTask(amount: string, address: string, symbol: AssetSymbol, payload?: string) {
-  return {
-    type: CREATE_SEND_TASK,
-    task: {
-      amount,
-      address,
-      symbol,
-      payload,
-    },
+  return async (dispatch: ThunkDispatch, getState: () => RootState) => {
+    // check that there is not already a receive task for the send block
+    if (sendTaskExist(getState(), address, amount)) {
+      console.log('skip task creation: duplicate task');
+      return;
+    }
+
+    dispatch({
+      type: CREATE_SEND_TASK,
+      task: {
+        amount,
+        address,
+        symbol,
+        payload,
+      },
+    });
   };
 }
 
@@ -101,14 +109,21 @@ export function createDepositTask(
 }
 
 export function createWithdrawTask(withdrawAmount: string, symbol: AssetSymbol, address: string, burnAmount?: string) {
-  return {
-    type: CREATE_WITHDRAW_TASK,
-    task: {
-      withdrawAmount,
-      address,
-      symbol,
-      burnAmount,
-    },
+  return async (dispatch: ThunkDispatch, getState: () => RootState) => {
+    if (withdrawTaskExist(getState(), address, withdrawAmount)) {
+      console.log('skip task creation: duplicate task');
+      return;
+    }
+
+    dispatch({
+      type: CREATE_WITHDRAW_TASK,
+      task: {
+        withdrawAmount,
+        address,
+        symbol,
+        burnAmount,
+      },
+    });
   };
 }
 

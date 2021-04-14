@@ -1,4 +1,4 @@
-import { AssetSymbol, Signature } from '@tixl/tixl-types';
+import { AssetSymbol } from '@tixl/tixl-types';
 
 import { ThunkDispatch, RootState } from '../..';
 import { SendTaskData } from '../actionTypes';
@@ -14,7 +14,7 @@ import { setTxProofOfWork } from '../selectors';
 export async function handleSendTask(dispatch: ThunkDispatch, task: SendTaskData) {
   console.log('send', { task });
 
-  await dispatch(progressTask(task));
+  dispatch(progressTask(task));
 
   const signatures = await dispatch(createSendTransaction(task.address, task.amount, task.symbol, task.payload));
 

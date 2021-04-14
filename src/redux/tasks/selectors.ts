@@ -36,12 +36,34 @@ export function sendBlockWaitingForNetwork(state: RootState): boolean {
 }
 
 // return true if there is a receive task for the send block signature
-export function sendBlockTask(state: RootState, sendSignature: Signature): boolean {
+export function receiveTaskExists(state: RootState, sendSignature: Signature): boolean {
   const receive = state.tasks.receive;
 
   if (receive.length === 0) return false;
 
   const receiveIndex = receive.findIndex((task) => task.sendSignature === sendSignature);
+
+  return receiveIndex !== -1;
+}
+
+// return true if there is already a send task
+export function sendTaskExist(state: RootState, address: string, amount: string) {
+  const send = state.tasks.send;
+
+  if (send.length === 0) return false;
+
+  const receiveIndex = send.findIndex((task) => task.address === address && task.amount === amount);
+
+  return receiveIndex !== -1;
+}
+
+// return true if there is already a withdraw task
+export function withdrawTaskExist(state: RootState, address: string, amount: string) {
+  const withdraw = state.tasks.withdraw;
+
+  if (withdraw.length === 0) return false;
+
+  const receiveIndex = withdraw.findIndex((task) => task.address === address && task.withdrawAmount === amount);
 
   return receiveIndex !== -1;
 }
