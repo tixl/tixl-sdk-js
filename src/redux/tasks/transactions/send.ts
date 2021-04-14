@@ -60,21 +60,6 @@ export function createSendTransaction(address: string, amount: string, symbol: A
     dispatch(updateNonces(sendUpdate.tx));
     dispatch(updateChain(sendUpdate.blockchain));
 
-    // TODO re-implement
-    // const sendInvalid = shouldSendNextTxInvalid(state);
-    // if (sendInvalid) {
-    //   update.tx.blocks.forEach((block: Block) => {
-    //     block.prev = 'invalid';
-    //   });
-    // await dispatch(sendNextTxInvalid(false));
-    // }
-
-    // TODO re implement modal via redux event
-    // if (txResponse === GatewayErrors.RATE_LIMIT) {
-    //   dispatch(showModal(ModalContentType.RATE_LIMIT_MODAL));
-    //   throw new Error('Gateway rate limit');
-    // }
-
     // collect new block signatures to wait for network result
     return [sendUpdate.sendBlock.signature];
   };
