@@ -76,7 +76,7 @@ export async function burnTx(
 
   const newBalance = JSBI.subtract(JSBI.BigInt(prev.senderBalance), JSBI.BigInt(amount.toString()));
 
-  console.log('withdrawal new balance', newBalance);
+  console.log('burn new balance', newBalance);
 
   const burnETH = await createBurnBlock(
     crypto,
