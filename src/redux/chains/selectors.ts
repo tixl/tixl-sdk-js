@@ -55,6 +55,23 @@ export const getDepositBlock = (state: RootState, transactionHash: string): Bloc
   return depositBlock;
 };
 
+export const getDepositBlockByClaim = (state: RootState, claimSignature: string): Block | null => {
+  let depositBlock = null;
+  const chainKeys = Object.keys(state.chains.signatureToChain);
+
+  chainKeys.forEach((key) => {
+    const blockchain = state.chains.signatureToChain[key];
+
+    blockchain.blocks.forEach((block: Block) => {
+      if (block.claimSignature === claimSignature) {
+        depositBlock = block;
+      }
+    });
+  });
+
+  return depositBlock;
+};
+
 export const getReceiveBlock = (state: RootState, sendSignature: Signature): Block | null => {
   let receiveBlock = null;
   const chainKeys = Object.keys(state.chains.signatureToChain);
@@ -89,6 +106,12 @@ export const getBlockState = (state: RootState, signature: Signature): BlockStat
 
   return blockState;
 };
+
+export function acceptedDepositBlockByClaim(state: RootState, claimSignature: string) {
+  const block = getDepositBlockByClaim(state, claimSignature);
+
+  return block && block.state === 'accepted' ? true : false;
+}
 
 export function acceptedDepositBlock(state: RootState, transactionHash: string) {
   const block = getDepositBlock(state, transactionHash);
