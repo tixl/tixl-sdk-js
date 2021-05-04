@@ -27,6 +27,7 @@ const getBlockIndex = (
   queryValue: string,
 ): BlockIndex | null => {
   let blockIndex = null;
+
   Object.keys(signatureToChain).forEach((key: string) => {
     const chain = signatureToChain[key];
     chain.blocks.forEach((block: BlockWithAdditionalInfo, index: number) => {
@@ -38,6 +39,7 @@ const getBlockIndex = (
       }
     });
   });
+
   return blockIndex;
 };
 
@@ -67,6 +69,10 @@ export function reducer(state = initialState, action: GeneralAction): ChainsRedu
       const rejectedBlocks = {
         ...state.rejectedBlocks,
       };
+
+      // do not reject already accepted blocks
+      const block = signatureToChain[blockIndex.chainPublicKey].blocks[blockIndex.blockArrayIndex];
+      if (block.state === 'accepted') return state;
 
       if (!rejectedBlocks[blockIndex.chainPublicKey]) {
         rejectedBlocks[blockIndex.chainPublicKey] = {
