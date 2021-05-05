@@ -21,7 +21,6 @@ import { getBlock } from '../../requests/getBlock';
 import { onNewNetworkResult, updateNonces } from '../tasks/actions';
 import { setTxProofOfWork } from '../tasks/selectors';
 
-// AccountChain related stuff
 export function loadAccountChain() {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     const state = getState();
@@ -35,7 +34,6 @@ export function loadAccountChain() {
         if (err.name === BlockchainNotFoundError.errorName) {
           dispatch(addLoggedError(err));
         } else {
-          // @todo - we must find a way to handle generic errors as well
           throw err;
         }
       }
@@ -113,7 +111,11 @@ export function reloadIndexedChains() {
         const chain = await fetchBlockchain(publicSig);
         dispatch(updateChain(chain));
       } catch (err) {
-        dispatch(addLoggedError(err));
+        if (err.name === BlockchainNotFoundError.errorName) {
+          dispatch(addLoggedError(err));
+        } else {
+          console.error(err);
+        }
       }
     });
   };
