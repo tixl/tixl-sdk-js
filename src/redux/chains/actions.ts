@@ -135,7 +135,7 @@ export function networkBlockState(block: BlockWithAdditionalInfo) {
     if (block.state !== 'pending') return;
 
     // only check blocks that are at least 30s old
-    if (block.createdAt >= new Date().getTime() - 30 * 1000) return;
+    if (block.createdAt >= new Date().getTime() - 20 * 1000) return;
 
     const fetchedBlock = await getBlock(block.signature, '');
 
