@@ -1,10 +1,13 @@
 import { Block, Blockchain } from '@tixl/tixl-types';
 import { BlockchainWithAdditionalInfo, BlockWithAdditionalInfo, BlockState } from './types';
 
+// the result contains blocks from the new blockchain
+// copies also the states from the existing chain / and pending blocks
 export const mergeChains = (
   existingChain: BlockchainWithAdditionalInfo | null,
   blockchain: Blockchain,
   defaultBlockState: BlockState = 'pending',
+  newBlocksAsAccepted: boolean = false, // set
 ): BlockchainWithAdditionalInfo => {
   if (!existingChain) {
     const newChain: BlockchainWithAdditionalInfo = Object.assign({}, blockchain) as BlockchainWithAdditionalInfo;
@@ -26,7 +29,9 @@ export const mergeChains = (
     if (indexOnExistingChain >= 0) {
       const existingBlock = existingChain.blocks[indexOnExistingChain];
 
-      if (existingBlock.state) {
+      // caller can force all new blocks into the accepted state
+      // this is the case if you merge with a chain that comes from the gateway
+      if (existingBlock.state && !newBlocksAsAccepted) {
         // copy the existing state over if there is one
         newChain.blocks[index].state = existingBlock.state;
       } else {
@@ -34,7 +39,7 @@ export const mergeChains = (
         newChain.blocks[index].state = 'accepted';
       }
     } else {
-      // new blocks are always pending
+      // new blocks
       newChain.blocks[index].state = defaultBlockState;
     }
   });

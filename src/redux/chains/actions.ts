@@ -78,7 +78,7 @@ export function createAccountChain() {
   };
 }
 
-export function updateChain(chain: Blockchain, defaultBlockState?: BlockState) {
+export function updateChain(chain: Blockchain, defaultBlockState?: BlockState, newBlocksAsAccepted?: boolean) {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     const state = getState();
 
@@ -86,7 +86,7 @@ export function updateChain(chain: Blockchain, defaultBlockState?: BlockState) {
 
     dispatch({
       type: UPDATE_CHAIN,
-      chain: mergeChains(existingChain, chain, defaultBlockState),
+      chain: mergeChains(existingChain, chain, defaultBlockState, newBlocksAsAccepted),
     });
   };
 }
@@ -109,7 +109,7 @@ export function reloadIndexedChains() {
         }
 
         const chain = await fetchBlockchain(publicSig);
-        dispatch(updateChain(chain));
+        dispatch(updateChain(chain, 'accepted', true));
       } catch (err) {
         if (err.name === BlockchainNotFoundError.errorName) {
           dispatch(addLoggedError(err));
