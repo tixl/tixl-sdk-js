@@ -13,6 +13,10 @@ export function reducer(state: KeySet | null = null, action: GeneralAction) {
     case GENERATE_KEYS_SUCCESS:
       return action.keySet;
     case RESET_ALL_DATA:
+      if (action.skip === 'keyset') {
+        return state;
+      }
+
       return null;
     default:
       return state;

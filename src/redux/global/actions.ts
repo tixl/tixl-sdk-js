@@ -6,9 +6,12 @@ import { acceptedDepositBlocks } from '../chains/selectors';
 import { depositTask } from '../tasks/selectors';
 import { doneTask } from '../tasks/actions';
 
-export function resetAllData(): ResetAllDataAction {
+// Reset redux state to defaults.
+// Can skip certain modules.
+export function resetAllData(skip?: 'keyset'): ResetAllDataAction {
   return {
     type: RESET_ALL_DATA,
+    skip,
   };
 }
 

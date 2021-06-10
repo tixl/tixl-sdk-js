@@ -7,6 +7,7 @@ import { GENERATE_KEYS, GENERATE_KEYS_SUCCESS, RESTORE_KEYS_SUCCESS } from './ac
 import { updateChain } from '../chains/actions';
 import { getKeys } from './selectors';
 import fetchBlockchain from '../../requests/getBlockchain';
+import { addLoggedError } from '../errors/actions';
 
 export const generateKeys = (mnemonicSeed?: Uint8Array) => {
   return async (dispatch: Dispatch) => {
@@ -23,16 +24,16 @@ export const generateKeys = (mnemonicSeed?: Uint8Array) => {
   };
 };
 
-export const restoreKeysFromState = (setError: (err: string) => void) => {
+export const restoreKeysFromState = () => {
   return async (dispatch: ThunkDispatch, getState: () => RootState) => {
     const state = getState();
     const keys = getKeys(state);
 
-    return dispatch(restoreKeys(keys.sig.privateKey, setError));
+    return dispatch(restoreKeys(keys.sig.privateKey));
   };
 };
 
-export const restoreKeys = (sigPk: SigPrivateKey, setError: (err: string) => void) => {
+export const restoreKeys = (sigPk: SigPrivateKey) => {
   return async (dispatch: ThunkDispatch) => {
     // restore public sig key to load account chain
     try {
@@ -63,7 +64,7 @@ export const restoreKeys = (sigPk: SigPrivateKey, setError: (err: string) => voi
 
       dispatch(updateChain(accountChain, 'accepted'));
     } catch (err) {
-      setError(err.toString());
+      dispatch(addLoggedError(err));
       console.error(err);
     }
   };
