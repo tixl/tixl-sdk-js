@@ -7,7 +7,6 @@ import { GENERATE_KEYS, GENERATE_KEYS_SUCCESS, RESTORE_KEYS_SUCCESS } from './ac
 import { updateChain } from '../chains/actions';
 import { getKeys } from './selectors';
 import fetchBlockchain from '../../requests/getBlockchain';
-import { addLoggedError } from '../errors/actions';
 
 export const generateKeys = (mnemonicSeed?: Uint8Array) => {
   return async (dispatch: Dispatch) => {
@@ -64,7 +63,6 @@ export const restoreKeys = (sigPk: SigPrivateKey) => {
 
       dispatch(updateChain(accountChain, 'accepted'));
     } catch (err) {
-      dispatch(addLoggedError(err));
       console.error(err);
     }
   };
