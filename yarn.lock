@@ -26,13 +26,6 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.2.tgz#8f03a22a04de437254e8ce8cc84ba39689288752"
   integrity sha512-HyYEUDeIj5rRQU2Hk5HTB2uHsbRQpF70nvMhVzi+VJR0X+xNEhjPui4/kBf3VeH/wqD28PT4sVOm8qqLjBrSZg==
 
-"@tixl/tixl-types@0.7.3":
-  version "0.7.3"
-  resolved "https://npm.pkg.github.com/download/@tixl/tixl-types/0.7.3/fe4ec1f8c30a33e532cb6020b911e7df38446ead631febb71a4111f670ea9ca1#d18b02e1be6ed356d80731ed8719cdd2b16dae95"
-  integrity sha512-O4dGkXH4ecWk6qzQIv2JWcm5NHh7kwRbQWcuUSA1rpu8OogTAY6SS4rihU6suOIAkIA6uvK4tglJlbRp8Q+C9w==
-  dependencies:
-    jsbi "3.1.4"
-
 "@types/aes-js@3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@types/aes-js/-/aes-js-3.1.1.tgz#34b3978122310c135de4b377270d1d65676fae28"
@@ -586,9 +579,9 @@ find-up@^4.0.0:
     path-exists "^4.0.0"
 
 follow-redirects@^1.10.0:
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.1.tgz#5f69b813376cee4fd0474a3aba835df04ab763b7"
-  integrity sha512-SSG5xmZh1mkPGyKzjZP8zLjltIfpW32Y5QpdNJyjcfGxK3qo3NDDkZOZSFiGn1A6SclQxY9GzEwAHQ3dmYRWpg==
+  version "1.14.8"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
+  integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
 
 function-bind@^1.1.1:
   version "1.1.1"
